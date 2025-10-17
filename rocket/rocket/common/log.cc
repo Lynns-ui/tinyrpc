@@ -1,7 +1,9 @@
 #include "log.h"
 #include "util.h"
+#include "config.h"
 
 namespace rocket {
+
 
 Logger* Logger::g_logger = nullptr;
 
@@ -9,7 +11,8 @@ Logger* Logger::GetGlobalLogger() {
     if (g_logger) {
         return g_logger;
     }
-    g_logger = new Logger();
+    std::string global_log_level = Config::GetGlobalCongfiger()->m_log_level;
+    g_logger = new Logger(StringToLogLevel(global_log_level));
     return g_logger;
 }
 
@@ -28,6 +31,18 @@ std::string LogLevelToString(LogLevel level) {
     default:
         return "UNKOWN";
         break;
+    }
+}
+
+LogLevel StringToLogLevel(const std::string& log_level) {
+    if (log_level == "DEBUG") {
+        return Debug;
+    } else if (log_level == "INFO") {
+        return Info;
+    } else if (log_level == "ERROR") {
+        return Error;
+    } else {
+        return Unknown;
     }
 }
 
@@ -69,5 +84,4 @@ void Logger::log() {
         printf(msg.c_str());
     }
 }
-
 }
