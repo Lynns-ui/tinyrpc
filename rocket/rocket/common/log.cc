@@ -8,12 +8,16 @@ namespace rocket {
 Logger* Logger::g_logger = nullptr;
 
 Logger* Logger::GetGlobalLogger() {
+    return g_logger;
+}
+
+void Logger::InitLogger() {
     if (g_logger) {
-        return g_logger;
+        return;
     }
     std::string global_log_level = Config::GetGlobalCongfiger()->m_log_level;
+    printf("Init Log level [%s]\n", global_log_level.c_str());
     g_logger = new Logger(StringToLogLevel(global_log_level));
-    return g_logger;
 }
 
 std::string LogLevelToString(LogLevel level) {
@@ -67,16 +71,17 @@ std::string LogEvent::toString() {
     std::stringstream ss;
     ss << "[" << LogLevelToString(m_evel) << "]\t"
        << "[" << time_str << "]\t" 
-       << "[" << std::to_string(m_pid) << ":" << std::to_string(m_thread_id) << "]\t"
-       << "[" << std::string(__FILE__) << ":" << __LINE__ << "]\t";
+       << "[" << std::to_string(m_pid) << ":" << std::to_string(m_thread_id) << "]\t";
     return ss.str();
 }
 
 void Logger::pushLog(const std::string& msg) {
+    std::lock_guard<std::mutex>locker(mtx_);
     m_buff.push(msg);
 }
 
 void Logger::log() {
+    std::lock_guard<std::mutex>locker(mtx_);
     while (!m_buff.empty()) {
         std::string msg = m_buff.front();
         m_buff.pop();
@@ -84,4 +89,5 @@ void Logger::log() {
         printf(msg.c_str());
     }
 }
+
 }

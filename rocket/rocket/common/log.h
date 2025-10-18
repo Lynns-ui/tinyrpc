@@ -9,6 +9,7 @@
 #include <memory>
 #include <stdio.h>
 #include <stdarg.h>
+#include <mutex>
 
 namespace rocket {
 
@@ -23,36 +24,6 @@ std::string formatString(const char* str, Args&&... args) {
     return result;
 }
 
-#define DEBUGLOG(str, ...)\
-    if (rocket::Logger::GetGlobalLogger()->getLogLevel() <= rocket::Debug)\
-    {\
-        std::string msg_debug = (new rocket::LogEvent(rocket::LogLevel::Debug))->toString() + rocket::formatString(str, ##__VA_ARGS__);     \
-        msg_debug += "\n";                                                                                                                  \
-        rocket::Logger::GetGlobalLogger()->pushLog(msg_debug);                                                                              \
-        rocket::Logger::GetGlobalLogger()->log();                                                                                           \
-    }\
-    
-
-#define INFOLOG(str, ...)                                                                                                                  \
-    if (rocket::Logger::GetGlobalLogger()->getLogLevel() <= rocket::Info)\
-    {\
-        std::string msg_info = (new rocket::LogEvent(rocket::LogLevel::Info))->toString() + rocket::formatString(str, ##__VA_ARGS__);       \
-        msg_info += "\n";                                                                                                                   \
-        rocket::Logger::GetGlobalLogger()->pushLog(msg_info);                                                                               \
-        rocket::Logger::GetGlobalLogger()->log();                                                                                           \
-    }\
-    
-
-#define ERRORLOG(str, ...)                                                                                                                 \
-    if (rocket::Logger::GetGlobalLogger()->getLogLevel() <= rocket::Error)\
-    {\
-        std::string msg_error = (new rocket::LogEvent(rocket::LogLevel::Error))->toString() + rocket::formatString(str, ##__VA_ARGS__);     \
-        msg_error += "\n";                                                                                                                  \
-        rocket::Logger::GetGlobalLogger()->pushLog(msg_error);                                                                              \
-        rocket::Logger::GetGlobalLogger()->log();\
-    }\
-
-
 enum LogLevel{
     Unknown = 0,
     Debug = 1,
@@ -62,13 +33,13 @@ enum LogLevel{
 
 class Logger {
 public:
-    typedef std::shared_ptr<Logger> s_ptr;
 
     void pushLog(const std::string& msg);
     void log();
 
     static Logger* GetGlobalLogger();
     static Logger* g_logger;
+    static void InitLogger();
 
     LogLevel getLogLevel() {
         return m_set_level;
@@ -78,6 +49,7 @@ private:
     Logger(LogLevel level) : m_set_level(level) { }
     LogLevel m_set_level;
     std::queue<std::string> m_buff;
+    std::mutex mtx_;
 };
 
 
@@ -86,9 +58,7 @@ LogLevel StringToLogLevel(const std::string& log_level);
 
 class LogEvent {
 public:
-    LogEvent(LogLevel level):m_evel(level){
-
-    }
+    LogEvent(LogLevel level):m_evel(level) { }
 
     std::string getFileName() const {
         return m_file_name;
@@ -98,7 +68,7 @@ public:
         return m_evel; 
     }
 
-    //日志格式：[level][%y-%m-%d %H:%M:%S.%ms]\t[pid:thread_id]\t[file_name:line][%msg]
+    // 日志格式：[level][%y-%m-%d %H:%M:%S.%ms]\t[pid:thread_id]\t[file_name:line][%msg]
     std::string toString();
 private:
     std::string m_file_name;    // 文件名
@@ -109,6 +79,38 @@ private:
     LogLevel m_evel;
 };
 
+
+#define DEBUGLOG(str, ...)\
+    if (rocket::Logger::GetGlobalLogger()->getLogLevel() <= rocket::Debug)\
+    {\
+        std::string msg_debug = (new rocket::LogEvent(rocket::LogLevel::Debug))->toString() + \
+            "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" + rocket::formatString(str, ##__VA_ARGS__);     \
+        msg_debug += "\n";                                                                                                                  \
+        rocket::Logger::GetGlobalLogger()->pushLog(msg_debug);                                                                              \
+        rocket::Logger::GetGlobalLogger()->log();                                                                                           \
+    }\
+    
+
+#define INFOLOG(str, ...)                                                                                                                  \
+    if (rocket::Logger::GetGlobalLogger()->getLogLevel() <= rocket::Info)\
+    {\
+        std::string msg_info = (new rocket::LogEvent(rocket::LogLevel::Info))->toString()  + \
+            "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" + rocket::formatString(str, ##__VA_ARGS__);       \
+        msg_info += "\n";                                                                                                                   \
+        rocket::Logger::GetGlobalLogger()->pushLog(msg_info);                                                                               \
+        rocket::Logger::GetGlobalLogger()->log();                                                                                           \
+    }\
+    
+
+#define ERRORLOG(str, ...)                                                                                                                 \
+    if (rocket::Logger::GetGlobalLogger()->getLogLevel() <= rocket::Error)\
+    {\
+        std::string msg_error = (new rocket::LogEvent(rocket::LogLevel::Error))->toString() + \
+            "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" + rocket::formatString(str, ##__VA_ARGS__);     \
+        msg_error += "\n";                                                                                                                  \
+        rocket::Logger::GetGlobalLogger()->pushLog(msg_error);                                                                              \
+        rocket::Logger::GetGlobalLogger()->log();\
+    }\
 
 }
 
