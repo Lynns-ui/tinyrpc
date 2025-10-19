@@ -30,7 +30,7 @@ public:
     }
 
 
-private:
+protected:
     int m_fd {-1};
 
     epoll_event m_listen_events;

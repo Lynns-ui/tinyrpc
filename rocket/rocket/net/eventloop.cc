@@ -53,26 +53,18 @@ EventLoop::EventLoop() {
         exit(0);
     }
 
-    m_wakeup_fd = eventfd(0, EFD_NONBLOCK);
-    if (m_wakeup_fd < 0) {
-        ERRORLOG("failed to create event loop, eventfd create error, error info[%d]", errno);
-        exit(0);
-    }
-
-    epoll_event event;
-    event.events = EPOLLIN; // 监听读事件
-    int rt = epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_wakeup_fd, &event);
-    if (rt == -1) {
-        ERRORLOG("failed to create event loop, epoll_ctl add error, error info[%d]", errno);
-        exit(0);
-    }
+    initWakeUpFdEvent();
 
     INFOLOG("sucess create event loop in thread %d", thread_id);
     t_current_eventloop = this;
 }
 
 EventLoop::~EventLoop() {
-
+    close(m_epoll_fd);
+    if (m_wakeup_fd_event) {
+        delete m_wakeup_fd_event;
+        m_wakeup_fd_event = NULL;
+    }
 }
 
 void EventLoop::loop() {
@@ -86,11 +78,16 @@ void EventLoop::loop() {
         while (!tmp_tasks.empty()) {
             auto it = tmp_tasks.front();
             tmp_tasks.pop();
-            it();
+            if (it) {
+                it();
+            }
         }
         int timeout = g_epoll_max_timeout;
         epoll_event result_events[g_epoll_max_events];
+
+        DEBUGLOG("now begin to epoll_wait");
         int rt = epoll_wait(m_epoll_fd, result_events, g_epoll_max_events, timeout);
+        DEBUGLOG("now end epoll_wait, rt = %d", rt);
 
         if (rt < 0) {
             ERRORLOG("epoll_wait error, errno=%d", errno);
@@ -101,28 +98,49 @@ void EventLoop::loop() {
                 if (fd_event == NULL) {
                     continue;
                 }
-                if (trigger_event.events | EPOLLIN) {
+                if (trigger_event.events & EPOLLIN) {
+                    DEBUGLOG("fd %d trigger EPOLLIN event", fd_event->getFd());
                     addTask(fd_event->handler(FdEvent::IN_EVENT));
-                } else if (trigger_event.events | EPOLLOUT) {
+                } else if (trigger_event.events & EPOLLOUT) {
+                    DEBUGLOG("fd %d trigger EPOLLOUT event", fd_event->getFd());
                     addTask(fd_event->handler(FdEvent::OUT_EVENT));
                 }
-
             }
         }
-
     }
 }
 
 void EventLoop::wakeup() {
-
+    INFOLOG("Wake UP");
+    m_wakeup_fd_event->wakeup();
 }
 
 void EventLoop::stop() {
     m_stop_flag = true;
+    wakeup();
 }
 
 void EventLoop::dealWakeup() {
 
+}
+
+void EventLoop::initWakeUpFdEvent() {
+    m_wakeup_fd = eventfd(0, EFD_NONBLOCK);
+    if (m_wakeup_fd < 0) {
+        ERRORLOG("failed to create event loop, eventfd create error, error info[%d]", errno);
+        exit(0);
+    }
+
+    m_wakeup_fd_event = new WakeUpFdEvenet(m_wakeup_fd);
+    m_wakeup_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT, [this]() {
+        char buf[8];
+        while (read(m_wakeup_fd, buf, 8) != -1 && errno != EAGAIN) {
+        
+        }
+        DEBUGLOG("read full bytes from wakeup fd[%d]", m_wakeup_fd);
+    });
+
+    addEpollEvent(m_wakeup_fd_event);
 }
 
 void EventLoop::addEpollEvent(FdEvent* event) {

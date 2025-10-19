@@ -7,6 +7,7 @@
 #include <queue>
 #include <mutex>
 #include "fdevent.h"
+#include "wakeupfd.h"
 
 namespace rocket {
 
@@ -28,13 +29,17 @@ public:
     bool isInLoopThread();
 
     void addTask(std::function<void()> cb, bool is_wake_up = false);
-private:
 
+private:
     void dealWakeup();
+
+    void initWakeUpFdEvent();
     
     pid_t thread_id {0};
     int m_epoll_fd {0};
     int m_wakeup_fd {0};
+
+    WakeUpFdEvenet* m_wakeup_fd_event {NULL};
 
     bool m_stop_flag { false }; // c++11初始化方法
 

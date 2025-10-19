@@ -1,8 +1,11 @@
+#include <string.h>
 #include "fdevent.h"
 
 namespace rocket{
 
-FdEvent::FdEvent(int fd) : m_fd(fd) {}
+FdEvent::FdEvent(int fd) : m_fd(fd) {
+    memset(&m_listen_events, 0, sizeof (m_listen_events));
+}
 
 FdEvent::~FdEvent() {}
 
