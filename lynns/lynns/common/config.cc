@@ -1,0 +1,54 @@
+#include <tinyxml2.h>
+#include "config.h"
+
+namespace lynns {
+using namespace tinyxml2;
+
+#define READ_XML_NODE(name, parent)                                             \
+    XMLElement* name##_node = parent->FirstChildElement(#name);                 \
+    if (name##_node == nullptr) {                                               \
+        printf("Start rocket server error, failed to file [%s]\n", xmlfile);  \
+        exit(0);                                                                \
+    }                                                                           \
+
+#define READ_STR_XML_NODE(name, parent) \
+    XMLElement* name##_node = parent->FirstChildElement(#name);\
+    if (!name##_node || !name##_node->GetText()) {   \
+        printf("Start rocket server error, failed to read node [%s]\n", xmlfile); \
+        exit(0); \
+    } \
+    std::string name##_str = std::string(name##_node->GetText());\
+
+Configer* Configer::g_configer = nullptr;
+
+void Configer::setGlobalConfiger(const char* xmlfile) {
+    if (g_configer == nullptr) {
+        g_configer = new Configer(xmlfile);
+    }
+}
+
+Configer* Configer::getGlobalConfiger() {
+    return g_configer;
+}
+
+
+Configer::Configer(const char* xmlfile) {
+    XMLDocument* xml_document = new XMLDocument();
+
+    bool rt = xml_document->LoadFile(xmlfile);
+    if (rt) {
+        printf("Start lynns server error, failed to read config file %s\n", xmlfile);
+        printf("LoadFile failed! TinyXML2 error: %s\n", xml_document->ErrorName());
+        exit(0);
+    }
+
+    READ_XML_NODE(root, xml_document);
+
+    READ_XML_NODE(log, root_node);
+
+    READ_STR_XML_NODE(log_level, log_node);
+
+    g_config_level = log_level_str;
+}
+
+}
