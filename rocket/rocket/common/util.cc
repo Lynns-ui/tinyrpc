@@ -21,4 +21,10 @@ pid_t getThreadId() {
     return g_threadid;
 }
 
+int64_t getNowMs() {
+    timeval val;
+    gettimeofday(&val, NULL);
+    return val.tv_sec * 1000 + val.tv_usec / 1000;
+}
+
 }

@@ -1,6 +1,3 @@
-#include "../rocket/common/log.h"
-#include "../rocket/common/config.h"
-#include "../rocket/net/eventloop.h"
 #include <iostream>
 #include <thread>
 #include <sys/socket.h>
@@ -8,6 +5,11 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <memory>
+#include "../rocket/common/log.h"
+#include "../rocket/common/config.h"
+#include "../rocket/net/eventloop.h"
+#include "../rocket/net/timerevent.h"
 
 int main() {
     
@@ -32,7 +34,7 @@ int main() {
         ERRORLOG("bind = -1");
         return 0;
     }
-    int rt = listen(listenfd, 100);
+    rt = listen(listenfd, 100);
     if (rt == -1) {
         ERRORLOG("listen = -1");
         return 0;
@@ -49,6 +51,13 @@ int main() {
     });
     eventloop->addEpollEvent(&event);
 
+    int i = 0;
+    std::shared_ptr<rocket::TimerEvent> timer_event = std::make_shared<rocket::TimerEvent>(
+        1000, true, [&i](){
+            INFOLOG("trigger timer event, count = %d", i++);
+        }
+    );
+    eventloop->addTimerEvent(timer_event);
     eventloop->loop();
 
 }

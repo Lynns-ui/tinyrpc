@@ -8,6 +8,7 @@
 #include <mutex>
 #include "fdevent.h"
 #include "wakeupfd.h"
+#include "timer.h"
 
 namespace rocket {
 
@@ -30,16 +31,22 @@ public:
 
     void addTask(std::function<void()> cb, bool is_wake_up = false);
 
+    void addTimerEvent(TimerEvent::s_ptr event);
+
 private:
     void dealWakeup();
 
     void initWakeUpFdEvent();
+
+    void initTimer();
     
     pid_t thread_id {0};
     int m_epoll_fd {0};
     int m_wakeup_fd {0};
 
     WakeUpFdEvenet* m_wakeup_fd_event {NULL};
+
+    Timer* m_timer { nullptr};
 
     bool m_stop_flag { false }; // c++11初始化方法
 
