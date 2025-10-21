@@ -20,7 +20,7 @@ int main() {
     sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
 
-    addr.sin_port = htons(1316);
+    addr.sin_port = htons(1317);
     addr.sin_family = AF_INET;
     inet_aton("127.0.0.1", &addr.sin_addr);
 
@@ -37,10 +37,11 @@ int main() {
     }
 
     lynns::EventLoop* eventloop = new lynns::EventLoop();
-    lynns::FdEvent event(fd);
+    lynns::FdEvent event(fd);   // 关联监听套接字的fd
+    // 回调函数
     event.listen(lynns::FdEvent::IN_EVENT, [&fd](){
         sockaddr_in peer_addr;
-        socklen_t addr_len = 0;
+        socklen_t addr_len = sizeof(peer_addr);
         memset(&peer_addr, 0, sizeof(peer_addr));
         int clientfd = accept(fd, reinterpret_cast<sockaddr*>(&peer_addr), &addr_len);
         DEBUGLOG("sucess get client fd:[%d], peer addr: [%s:%d]", clientfd, inet_ntoa(peer_addr.sin_addr), ntohs(peer_addr.sin_port));

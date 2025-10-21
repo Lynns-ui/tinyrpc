@@ -109,20 +109,19 @@ void EventLoop::loop() {
         } else {
             for (int i = 0; i < n; i++) {
                 epoll_event trigger_event = events[i];
-                FdEvent* fdevent =static_cast<FdEvent*>(trigger_event.data.ptr);
+                FdEvent* fdevent = static_cast<FdEvent*>(trigger_event.data.ptr);
                 if (fdevent == nullptr) {
                     continue;
                 }
                 if (trigger_event.events & EPOLLIN) {
                     DEBUGLOG("trigger EPOLLIN event");
-                    addTask(fdevent->hander(FdEvent::IN_EVENT), true);
+                    addTask(fdevent->hander(FdEvent::IN_EVENT));
                 } else if (trigger_event.events & EPOLLOUT) {
                     DEBUGLOG("trigger EPOLLOUT event");
                     addTask(fdevent->hander(FdEvent::OUT_EVENT));
                 }
             }
         }
-
     }
 }
 
