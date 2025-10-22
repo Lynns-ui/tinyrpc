@@ -18,12 +18,17 @@ public:
 
     EventLoop* getEventloop();
 
+    void start();
+
+    void join();
 private:
     pid_t m_thread_id {-1};     
     pthread_t m_thread;
     EventLoop* m_eventloop {NULL};
 
     sem_t m_init_sem;
+
+    sem_t m_start_sem;
 
 };
 

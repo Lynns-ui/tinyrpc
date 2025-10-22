@@ -5,6 +5,7 @@ LDFLAGS = -ltinyxml2
 
 # 目标可执行文件
 TARGET = test_event
+TARGET_IO = test_io
 
 # 源文件
 SRCS = test_eventloop.cc \
@@ -12,11 +13,23 @@ SRCS = test_eventloop.cc \
 	../rocket/net/eventloop.cc ../rocket/net/fdevent.cc ../rocket/net/timer.cc \
 	../rocket/net/timerevent.cc ../rocket/net/wakeupfd.cc
 
-# 生成可执行文件
-all:
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS)  $(LDFLAGS) 
-	@echo "编译完成：$(TARGET)"
+SRCS_IO = test_iothread.cc \
+	../rocket/common/config.cc ../rocket/common/log.cc ../rocket/common/util.cc \
+	../rocket/net/eventloop.cc ../rocket/net/fdevent.cc ../rocket/net/timer.cc \
+	../rocket/net/timerevent.cc ../rocket/net/wakeupfd.cc	../rocket/net/io_thread.cc \
+	../rocket/net/io_thread_pool.cc
+
+# 编译所有可执行的文件
+all: $(TARGET) $(TARGET_IO)
+
+$(TARGET): $(SRCS)
+	$(CXX) $(CXXFLAGS) -o $@ $^  $(LDFLAGS) 
+	@echo "编译完成：$@"
+
+$(TARGET_IO): $(SRCS_IO)
+	$(CXX) $(CXXFLAGS) -o $@ $^  $(LDFLAGS)
+	@echo "编译完成：$@"
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(TARGET_IO)
 	@echo "清理完成"
