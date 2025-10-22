@@ -63,6 +63,7 @@
         "executor": "cpp",
         "netfwd": "cpp",
         "timer": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "socket": "cpp"
     }
 }
