@@ -2,6 +2,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <memory>
 #include "../lynns/common/config.h"
 #include "../lynns/common/log.h"
 #include "../lynns/net/eventloop.h"
@@ -20,7 +21,7 @@ int main() {
     sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
 
-    addr.sin_port = htons(1317);
+    addr.sin_port = htons(1316);
     addr.sin_family = AF_INET;
     inet_aton("127.0.0.1", &addr.sin_addr);
 
@@ -44,9 +45,17 @@ int main() {
         socklen_t addr_len = sizeof(peer_addr);
         memset(&peer_addr, 0, sizeof(peer_addr));
         int clientfd = accept(fd, reinterpret_cast<sockaddr*>(&peer_addr), &addr_len);
-        DEBUGLOG("sucess get client fd:[%d], peer addr: [%s:%d]", clientfd, inet_ntoa(peer_addr.sin_addr), ntohs(peer_addr.sin_port));
+        INFOLOG("sucess get client fd:[%d], peer addr: [%s:%d]", clientfd, inet_ntoa(peer_addr.sin_addr), ntohs(peer_addr.sin_port));
     });
 
     eventloop->addEpollEvent(&event);
+
+    int i = 0;
+    std::shared_ptr<lynns::TimerEvent> timer_event = std::make_shared<lynns::TimerEvent>(1000, true,
+        [&i](){
+            INFOLOG("trigger timer event, count = %d", i++);
+    });
+    eventloop->addTimerEvent(timer_event);
+
     eventloop->loop();
 }

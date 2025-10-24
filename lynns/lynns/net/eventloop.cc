@@ -50,6 +50,7 @@ EventLoop::EventLoop() : is_close_(false) {
     }
 
     initWakupFdEvent();
+    initTimer();
 
     INFOLOG("success create eventloop in thread %d", thread_id_);
     t_current_thread = this;
@@ -80,6 +81,15 @@ void EventLoop::initWakupFdEvent() {
     });
 
     addEpollEvent(wakeup_event_);
+}
+
+void EventLoop::initTimer() {
+    timer_ = new Timer();
+    addEpollEvent(timer_);
+}
+
+void EventLoop::addTimerEvent(TimerEvent::s_ptr event) {
+    timer_->addTimerEvent(event);
 }
 
 void EventLoop::loop() {

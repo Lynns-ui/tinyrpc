@@ -9,6 +9,7 @@
 #include "fdevent.h"
 #include "wakeupevent.h"
 #include "../common/util.h"
+#include "timer.h"
 
 namespace lynns {
 
@@ -31,9 +32,12 @@ public:
 
     void wakeup();
 
-    void initWakupFdEvent();
+    void addTimerEvent(TimerEvent::s_ptr event);
 
 private:
+    void initWakupFdEvent();
+
+    void initTimer();
 
     int epoll_fd_ {0};
 
@@ -44,6 +48,7 @@ private:
     int wakeup_fd_ {0};
 
     WakeUpEvent* wakeup_event_;
+    Timer* timer_;
 
     pid_t thread_id_ {0};
 
