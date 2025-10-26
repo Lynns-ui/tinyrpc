@@ -90,6 +90,7 @@ void TcpConnection::excute() {
     INFOLOG("success get reauest[%s] from client[%s]", msg.c_str(), m_peer_addr->toString().c_str());
 
     m_fd_event->listen(FdEvent::OUT_EVENT, std::bind(&TcpConnection::onWrite, this));
+    m_io_thread->getEventloop()->addEpollEvent(m_fd_event);
 }
 
 void TcpConnection::onWrite() {
@@ -99,8 +100,10 @@ void TcpConnection::onWrite() {
         return;
     }
 
+    bool is_write_all = false;
     while (true) {
-        if (m_out_buffer->readBytes() == 0) {
+        if (m_out_buffer->readBytes() == 0) {\
+            is_write_all = true;
             DEBUGLOG("no data need to send to client[%s]", m_peer_addr->toString().c_str());
             break;
         }
@@ -108,7 +111,10 @@ void TcpConnection::onWrite() {
         int rt = write(m_fd, m_out_buffer->readPtr(), write_size);
         
         if (rt >= write_size) {
-            DEBUGLOG("all data has write to client [%s]",  m_peer_addr->toString().c_str());
+            printf("rt = %d\n", rt);
+            is_write_all = true;
+            m_out_buffer->moveReadIndex(write_size);
+            INFOLOG("all data has write to client [%s]",  m_peer_addr->toString().c_str());
             break;
         } else if (rt == -1 && errno == EAGAIN) {
             // 发送缓冲区已满，不能再次发送
@@ -116,6 +122,11 @@ void TcpConnection::onWrite() {
             DEBUGLOG("write data error, errno == EAGAIN and rt == -1");
             break;
         }
+    }
+
+    if (is_write_all) {
+        m_fd_event->cancel(FdEvent::OUT_EVENT);
+        m_io_thread->getEventloop()->addEpollEvent(m_fd_event);
     }
 }
 
