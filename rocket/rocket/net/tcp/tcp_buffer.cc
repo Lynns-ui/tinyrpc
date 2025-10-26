@@ -96,4 +96,16 @@ void TcpBuffer::moveWriteIndex(int size) {
     adjustBuffer();
 }
 
+char* TcpBuffer::writePtr() {
+    return m_buff.data() + m_writePos;
+}
+
+int TcpBuffer::buffSize() {
+    return m_buff.size();
+}
+
+char* TcpBuffer::readPtr() {
+    return m_buff.data() + m_readPos;
+}
+
 }

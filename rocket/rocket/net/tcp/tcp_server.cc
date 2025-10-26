@@ -2,6 +2,7 @@
 #include "../eventloop.h"
 #include "../../common/log.h"
 #include "../fdevent.h"
+#include "tcp_connection.h"
 
 namespace rocket {
 
@@ -47,12 +48,18 @@ void TcpServer::start() {
 
 void TcpServer::onAccept() {
     // 需要执行的实际函数，把新连接过来的clientfd，放到iothreadpool中
-    int client_fd = m_acceptor->accept();
+    auto re = m_acceptor->accept();
+    int client_fd = re.first;
+    NetAddr::s_ptr peer_addr = re.second;
     // FdEvent client_fd_event(client_fd);
     m_client_counts++;
 
     // todo... : 把clientfd 添加到io线程里面
-    // m_io_threadpool->getIOThread()->getEventloop()->addEpollEvent(&client_fd_event);
+    IOThread* io_thread = m_io_threadpool->getIOThread();
+    TcpConnection::s_ptr client = std::make_shared<TcpConnection>(io_thread, client_fd, 
+        128, peer_addr);
+    client->setState(TcpConnection::Connected);
+    m_client.insert(client);
     INFOLOG("TcpServer success get client, fd=[%d]", client_fd);
 }
 
