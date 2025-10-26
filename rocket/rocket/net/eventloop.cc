@@ -35,6 +35,7 @@
 
 namespace rocket{
 
+// 当前线程的eventloop对象
 static thread_local EventLoop* t_current_eventloop = NULL;
 static int g_epoll_max_timeout = 10000;
 static int g_epoll_max_events = 10;
@@ -200,5 +201,12 @@ void EventLoop::addTimerEvent(TimerEvent::s_ptr event) {
     m_timer->addTimerEvent(event);
 }
 
+EventLoop* EventLoop::GetCurrentEventloop() {
+    if (t_current_eventloop) {
+        return t_current_eventloop;
+    }
+    t_current_eventloop = new EventLoop();
+    return t_current_eventloop;
+}
 
 }

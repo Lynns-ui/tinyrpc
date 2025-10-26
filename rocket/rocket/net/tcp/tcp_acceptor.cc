@@ -62,4 +62,8 @@ TcpAcceptor::~TcpAcceptor() {
 
 }
 
+int TcpAcceptor::getListenFd() {
+    return m_listenfd;
+}
+
 }
