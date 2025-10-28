@@ -2,8 +2,10 @@
 #include "../rocket/net/tcp/net_addr.h"
 #include "../rocket/common/config.h"
 #include "../rocket/net/tcp/tcp_server.h"
+#include "../rocket/net/tcp/tcp_client.h"
+#include "../rocket/net/string_coder.h"
 
-void test_tcp_client() {
+void test_connect() {
     
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if(fd < 0) {
@@ -32,12 +34,35 @@ void test_tcp_client() {
     INFOLOG("success read %d bytes, [%s]", rt, rsp.c_str());
 }
 
+void test_tcp_client() {
+    rocket::IPNetAddr::s_ptr peer_addr = std::make_shared<rocket::IPNetAddr>("127.0.0.1", 1234);
+    rocket::TcpClient client(peer_addr);
+
+    client.connect([peer_addr](){
+        DEBUGLOG("connect to [%s] success", peer_addr->toString().c_str());
+    });
+}   
+
+void test_client_encode() {
+    rocket::IPNetAddr::s_ptr peer_addr = std::make_shared<rocket::IPNetAddr>("127.0.0.1", 1234);
+    rocket::TcpClient client(peer_addr);
+
+    client.connect([peer_addr, &client](){
+        DEBUGLOG("connect to [%s] success", peer_addr->toString().c_str());
+        auto msg = std::make_shared<rocket::StringProtocol>("this is encode test!");
+        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("msg info is %s", msg->getInfo().c_str());
+        });
+    });
+
+}
+
 int main() {
 
-  rocket::Config::SetGlobalConfiger("../config/rocket.xml");
-  rocket::Logger::InitLogger();
+    rocket::Config::SetGlobalConfiger("../config/rocket.xml");
+    rocket::Logger::InitLogger();
 
-  test_tcp_client();
+    test_client_encode();
 
     return 0;
 }

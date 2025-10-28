@@ -1,0 +1,33 @@
+#ifndef ROCKET_NET_ABSTACT_PROTOCOL_H
+#define ROCKET_NET_ABSTACT_PROTOCOL_H
+
+#include <memory>
+#include <string>
+#include "tcp/tcp_buffer.h"
+
+namespace rocket {
+
+class AbstractProtocol{
+public:
+    virtual ~AbstractProtocol() {}
+
+    typedef std::shared_ptr<AbstractProtocol> s_ptr;
+
+    std::string getReqId() {
+        return m_req_id;
+    }
+
+    void setReqId(const std::string& req_id) {
+        m_req_id = req_id;
+    }
+
+    virtual std::string getInfo() = 0;
+
+protected:
+    std::string m_req_id;   // 请求id 或者响应
+
+};
+
+}
+
+#endif

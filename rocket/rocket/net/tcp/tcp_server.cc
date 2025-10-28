@@ -55,8 +55,8 @@ void TcpServer::onAccept() {
     m_client_counts++;
 
     // todo... : 把clientfd 添加到io线程里面 通过负载
-    IOThread* io_thread = m_io_threadpool->getIOThread();
-    TcpConnection::s_ptr client = std::make_shared<TcpConnection>(io_thread, client_fd, 128, peer_addr);
+    EventLoop* event_loop = m_io_threadpool->getIOThread()->getEventloop();
+    TcpConnection::s_ptr client = std::make_shared<TcpConnection>(event_loop, client_fd, 128, peer_addr);
     client->setState(TcpConnection::Connected);
     m_client.insert(client);
     INFOLOG("TcpServer success get client, fd=[%d]", client_fd);

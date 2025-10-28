@@ -2,9 +2,14 @@
 #define ROCKET_NET_TCP_CONNECTION_H
 
 #include <memory>
+#include <queue>
+#include <functional>
 #include "tcp_buffer.h"
 #include "net_addr.h"
 #include "../io_thread.h"
+#include "../abstract_protocol.h"
+#include "../abstract_coder.h"
+#include "../string_coder.h"
 
 namespace rocket {
 
@@ -19,7 +24,14 @@ public:
         Closed = 4,
     };
 
-    TcpConnection(IOThread* io_thread, int client_fd, int buffer_size, NetAddr::s_ptr peer_addr);
+    enum TcpConnectionType {
+        TcpConnectionByServer = 1, // 作为服务端使用，代表跟对端客户端的连接
+        TcpConnectionByClient = 2, // 作为客户端使用，代表跟对端服务端的连接
+    };
+
+
+    TcpConnection(EventLoop* event_loop, int client_fd, int buffer_size, NetAddr::s_ptr peer_addr, 
+        TcpConnectionType type = TcpConnectionByServer);
 
     ~TcpConnection();
 
@@ -31,11 +43,20 @@ public:
 
     void setState(const TcpConnection::TcpState state);
 
+    void setConnectionType(const TcpConnection::TcpConnectionType type);
+
     TcpConnection::TcpState getState();
 
     void clear();
 
     void shutdown();    // 服务器主动关闭连接
+
+    // 启动监听可写事件
+    void listenWrite();
+
+    void listenRead();
+
+    void pushSendMsg(AbstractProtocol::s_ptr msg, std::function<void(AbstractProtocol::s_ptr)> call_back);
 private:
     NetAddr::s_ptr m_local_addr;
     NetAddr::s_ptr m_peer_addr;
@@ -45,12 +66,18 @@ private:
 
     int m_fd;
 
-    IOThread* m_io_thread { nullptr };  // 持有该连接的io线程
+    EventLoop* m_event_loop { nullptr };  // 持有该连接的io线程
     
     FdEvent* m_fd_event { nullptr };    // 
 
     TcpState m_state;
 
+    TcpConnectionType m_connection_type {TcpConnectionByServer};
+
+    // std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)> >
+    std::queue<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_callbacks;
+
+    AbstractCoder::s_ptr m_coder;
 };
 
 
