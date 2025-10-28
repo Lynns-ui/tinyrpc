@@ -63,6 +63,7 @@ void TcpConnection::onRead() {
         // 处理关闭连接 todo...
         INFOLOG("peer close, peer addr[%s], client_fd[%d]", m_peer_addr->toString().c_str(), m_fd);
         clear();
+        return;
     }
 
     if (!is_read_all) {
@@ -102,7 +103,7 @@ void TcpConnection::onWrite() {
 
     bool is_write_all = false;
     while (true) {
-        if (m_out_buffer->readBytes() == 0) {\
+        if (m_out_buffer->readBytes() == 0) {
             is_write_all = true;
             DEBUGLOG("no data need to send to client[%s]", m_peer_addr->toString().c_str());
             break;
@@ -111,7 +112,7 @@ void TcpConnection::onWrite() {
         int rt = write(m_fd, m_out_buffer->readPtr(), write_size);
         
         if (rt >= write_size) {
-            printf("rt = %d\n", rt);
+            // printf("rt = %d\n", rt);
             is_write_all = true;
             m_out_buffer->moveReadIndex(write_size);
             INFOLOG("all data has write to client [%s]",  m_peer_addr->toString().c_str());
@@ -143,6 +144,8 @@ void TcpConnection::clear() {
     if (m_state == Closed) {
         return;
     }
+    m_fd_event->cancel(FdEvent::IN_EVENT);
+    m_fd_event->cancel(FdEvent::OUT_EVENT);
     m_io_thread->getEventloop()->delEpollEvent(m_fd_event);
     m_state = Closed;
 }
@@ -154,6 +157,7 @@ void TcpConnection::shutdown() {
     }
 
     // 处于半关闭，四次挥手
+    // 半连接状态：表示关闭发送端但是仍可以接收数据
     m_state = HalfClosing;
     // 调用shutdown 关闭读写，意味着服务器不会再对这个fd进行读写操作
     // 向客户端发送了 FIN 报文，触发了四次挥手的第一个阶段

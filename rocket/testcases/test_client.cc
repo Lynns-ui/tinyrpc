@@ -26,7 +26,7 @@ void test_tcp_client() {
     // 等待 read 返回结果
     INFOLOG("success write %d bytes, [%s]", msg.length(), msg.c_str());
 
-    char buff[100];
+    char buff[100] = {0};
     rt = read(fd, buff, 100);
     std::string rsp(buff);
     INFOLOG("success read %d bytes, [%s]", rt, rsp.c_str());
