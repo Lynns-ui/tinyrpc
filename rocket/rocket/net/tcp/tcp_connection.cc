@@ -38,7 +38,9 @@ void TcpConnection::onRead() {
     bool is_closed = false;
     while (!is_read_all) {
         if (m_in_buffer->writeBytes() == 0) {
+            DEBUGLOG("m_in_buffer writeBytes = 0");
             m_in_buffer->resizeBuffer(2 * m_in_buffer->buffSize());
+            DEBUGLOG("m_in_buffer size is [%d]", m_in_buffer->buffSize());
         }
         int read_count = m_in_buffer->writeBytes();
         // int write_index = m_in_buffer->writeIndex();
@@ -78,24 +80,44 @@ void TcpConnection::onRead() {
     // 执行
     // 需要RPC协议的解析
     excute();
+
+    // tcpClient 作为tcp的客户端，在收到回包之后，读取的消息放到其connection的in_buffer中，
+    // 之后调用excute方法，在excute方法中，处理
 }
 
 void TcpConnection::excute() {
-    // 将RPC请求执行业务逻辑，获取RPC响应，再把 RPC 响应发送回去
-    std::vector<char> tmp;
-    int size = m_in_buffer->readBytes();
-    tmp.resize(size);
-    m_in_buffer->readFromBuffer(tmp, size);
+    if (m_connection_type == TcpConnection::TcpConnectionByServer) {
+        // 以下是服务端处理请求，做出回复逻辑
+        std::vector<char> tmp;
+        int size = m_in_buffer->readBytes();
+        tmp.resize(size);
+        m_in_buffer->readFromBuffer(tmp, size);
 
-    std::string msg;
-    for (int i = 0; i < tmp.size(); i++) {
-        msg += tmp[i];
+        std::string msg;
+        for (int i = 0; i < tmp.size(); i++) {
+            msg += tmp[i];
+        }
+        m_out_buffer->writeToBuffer(msg.c_str(), msg.length());
+
+        INFOLOG("success get request[%s] from client[%s]", msg.c_str(), m_peer_addr->toString().c_str());
+
+        listenWrite();
+    } else {
+        // 作为client
+        // 从buffer里decode 得到 Msg对象， 成功执行其回调
+        std::vector<AbstractProtocol::s_ptr> results;
+        m_coder->decode(results, m_in_buffer);
+
+        for (int i = 0; i < results.size(); i++) {
+            std::string req_id = results[i]->getReqId();
+            auto it = m_read_callbacks.find(req_id);
+            if (it != m_read_callbacks.end()) {
+                if (it->second) {
+                    it->second(results[i]);
+                }
+            }
+        }
     }
-    m_out_buffer->writeToBuffer(msg.c_str(), msg.length());
-
-    INFOLOG("success get reauest[%s] from client[%s]", msg.c_str(), m_peer_addr->toString().c_str());
-
-    listenWrite();
 }
 
 void TcpConnection::onWrite() {
@@ -105,6 +127,7 @@ void TcpConnection::onWrite() {
         return;
     }
 
+    // 作为Tcp客户端
     if (m_connection_type == TcpConnection::TcpConnectionByClient) {
         // 1. 将message encode得到字节流
         // 2. 将字节流写入到buffer中
@@ -202,6 +225,10 @@ void TcpConnection::listenRead() {
 
 void TcpConnection::pushSendMsg(AbstractProtocol::s_ptr msg, std::function<void(AbstractProtocol::s_ptr)> call_back) {
     m_write_callbacks.push(std::make_pair(msg, call_back));
+}
+
+void TcpConnection::pushReadMsg(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> call_back) {
+    m_read_callbacks[req_id] = call_back;
 }
 
 }

@@ -4,6 +4,7 @@
 #include <memory>
 #include <queue>
 #include <functional>
+#include <map>
 #include "tcp_buffer.h"
 #include "net_addr.h"
 #include "../io_thread.h"
@@ -57,6 +58,8 @@ public:
     void listenRead();
 
     void pushSendMsg(AbstractProtocol::s_ptr msg, std::function<void(AbstractProtocol::s_ptr)> call_back);
+
+    void pushReadMsg(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> call_back);
 private:
     NetAddr::s_ptr m_local_addr;
     NetAddr::s_ptr m_peer_addr;
@@ -72,12 +75,15 @@ private:
 
     TcpState m_state;
 
+    AbstractCoder::s_ptr m_coder;
+
     TcpConnectionType m_connection_type {TcpConnectionByServer};
 
     // std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)> >
     std::queue<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_callbacks;
 
-    AbstractCoder::s_ptr m_coder;
+    // key : req_id
+    std::map<std::string, std::function<void(AbstractProtocol::s_ptr)>> m_read_callbacks;
 };
 
 

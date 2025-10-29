@@ -27,7 +27,7 @@ int TcpBuffer::writeIndex() {
 void TcpBuffer::writeToBuffer(const char* buff, int size) {
     // 当写入的数据大于可写区域时
     if (size > writeBytes()) {
-        DEBUGLOG("write size > m_buff's writeable");
+        DEBUGLOG("write size[%d] > m_buff's writeable[%d]", size, writeBytes());
         int new_size = (int)(m_writePos + size + 1);
         resizeBuffer(new_size);
     }
@@ -56,6 +56,7 @@ void TcpBuffer::resizeBuffer(int new_size) {
     std::vector<char> tmp(new_size);
     // 将后面的数据拷贝count个到前面
     memcpy(&tmp[0], &m_buff[m_readPos], read_size);
+    // m_buff.resize(new_size);
     m_buff.swap(tmp);
 
     m_readPos = 0;
@@ -78,7 +79,7 @@ void TcpBuffer::adjustBuffer() {
 void TcpBuffer::moveReadIndex(int size) {
     size_t j = m_readPos + size;
     // 禁止读指针超过写指针?
-    if (j >= m_buff.size()) {
+    if (j > m_writePos) {
         ERRORLOG("move readIndex error, invalid size %d, old_read_index %d, buffer size %d",size, m_readPos, m_buff.size());
         return;
     }
@@ -88,7 +89,7 @@ void TcpBuffer::moveReadIndex(int size) {
 
 void TcpBuffer::moveWriteIndex(int size) {
     size_t j = m_writePos + size;
-    if (j >= m_buff.size()) {
+    if (j > m_buff.size()) {
         ERRORLOG("move writeIndex error, invalid size %d, old_read_index %d, buffer size %d", size, m_writePos, m_buff.size());
         return;
     }

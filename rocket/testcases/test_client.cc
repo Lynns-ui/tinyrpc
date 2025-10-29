@@ -50,6 +50,30 @@ void test_client_encode() {
     client.connect([peer_addr, &client](){
         DEBUGLOG("connect to [%s] success", peer_addr->toString().c_str());
         auto msg = std::make_shared<rocket::StringProtocol>("this is encode test!");
+        msg->setReqId("123456");
+        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("msg info is %s", msg->getInfo().c_str());
+        });
+
+        client.readMsg("123456", [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("get req_id:[%s], get response [%s]", msg->getReqId().c_str(), msg->getInfo().c_str());
+        });
+
+        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("msg info is %s", msg->getInfo().c_str());
+        });
+        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("msg info is %s", msg->getInfo().c_str());
+        });
+        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("msg info is %s", msg->getInfo().c_str());
+        });
+        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("msg info is %s", msg->getInfo().c_str());
+        });
+        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
+            INFOLOG("msg info is %s", msg->getInfo().c_str());
+        });
         client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
             INFOLOG("msg info is %s", msg->getInfo().c_str());
         });

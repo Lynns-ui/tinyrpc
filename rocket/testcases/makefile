@@ -4,48 +4,38 @@ CXXFLAGS = -std=c++11 -g -pthread
 LDFLAGS = -ltinyxml2
 
 # 目标可执行文件
-TARGET = test_event
-TARGET_IO = test_io
-TARGET_TCP = test_tcp
-TARGET_CON = test_connect
+TARGETS = test_event test_io test_tcp test_connect
 
-
+# main函数入口文件
+MAIN_EVENT = test_eventloop.cc
+MAIN_IO = test_iothread.cc
+MAIN_TCP = test_tcp.cc
+MAIN_CON = test_client.cc
 
 # 源文件
-SRCS = test_iothread.cc \
-	../rocket/common/*.cc  \
-	../rocket/net/*.cc \
-	../rocket/net/tcp/*.cc
-
-SRCS_TCP = test_tcp.cc \
-	../rocket/common/*.cc  \
-	../rocket/net/*.cc \
-	../rocket/net/tcp/*.cc
-
-SRCS_CON = test_client.cc \
-	../rocket/common/*.cc  \
+SRCS = ../rocket/common/*.cc \
 	../rocket/net/*.cc \
 	../rocket/net/tcp/*.cc
 
 # 编译所有可执行的文件
-all: $(TARGET) $(TARGET_IO) $(TARGET_TCP) $(TARGET_CON)
+all: $(TARGETS)
 
-$(TARGET): $(SRCS)
+test_event: $(MAIN_EVENT) $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) 
 	@echo "编译完成：$@"
 
-$(TARGET_IO): $(SRCS)
+test_io: $(MAIN_IO) $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "编译完成：$@"
 
-$(TARGET_TCP): $(SRCS_TCP)
+test_tcp: $(MAIN_TCP) $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "编译完成：$@"
 
-$(TARGET_CON): $(SRCS_CON)
+test_connect: $(MAIN_CON) $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "编译完成：$@"
 
 clean:
-	rm -f $(TARGET) $(TARGET_IO) $(TARGET_TCP) $(TARGET_CON)
+	rm -f $(TARGETS)
 	@echo "清理完成"
