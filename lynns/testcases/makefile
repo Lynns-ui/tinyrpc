@@ -3,17 +3,19 @@ CXX = g++
 CXXFLAGS = -std=c++11 -g -pthread
 LINK = -ltinyxml2
 
-TARGET = test_time
+TARGETS = test_time test_iothread
 
-SORCS = test_eventloop.cc ../lynns/common/config.cc ../lynns/common/log.cc ../lynns/common/util.cc \
-	../lynns/net/eventloop.cc ../lynns/net/fdevent.cc ../lynns/net/timer_event.cc \
-	../lynns/net/timer.cc ../lynns/net/wakeupevent.cc
+MAIN_IO = test_iothread.cc
+
+SORCS = ../lynns/common/*.cc \
+	../lynns/net/*.cc \
 
 all: $(TARGET)
 
-$(TARGET) : $(SORCS)
+test_iothread: $(MAIN_IO) $(SORCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LINK)
 	@echo "编译完成 $@"
 
 clean:
 	rm -f $(TARGET)
+	@echo "清理完成"

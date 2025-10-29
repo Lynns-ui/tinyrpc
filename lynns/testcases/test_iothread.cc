@@ -1,0 +1,76 @@
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <memory>
+#include "../lynns/common/config.h"
+#include "../lynns/common/log.h"
+#include "../lynns/net/eventloop.h"
+#include "../lynns/net/io_threadpool.h"
+
+void test_iothread() {
+
+    int fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        ERRORLOG("create socket fd error!");
+        return;
+    }
+
+    sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+
+    addr.sin_port = htons(1316);
+    addr.sin_family = AF_INET;
+    inet_aton("127.0.0.1", &addr.sin_addr);
+
+    int rt = bind(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
+    if (rt < 0) {
+        ERRORLOG("bind error");
+        return;
+    }
+
+    rt = listen(fd, 100);
+    if (rt < 0) {
+        ERRORLOG("listen error");
+        return;
+    }
+
+    lynns::IOThreadPool io_thread_pool(2);
+    // 线程池刚刚构造完成时，每个 IOThread 的线程 (Main) 可能还没来得及执行到
+    // eventloop_ = std::make_shared<EventLoop>();
+    // 所以 getEventLoop() 返回的还是 nullptr
+    lynns::EventLoop::s_ptr eventloop = io_thread_pool.getIOThread()->getEventLoop();
+
+    lynns::FdEvent event(fd);   // 关联监听套接字的fd
+    // 回调函数
+    event.listen(lynns::FdEvent::IN_EVENT, [&fd](){
+        sockaddr_in peer_addr;
+        socklen_t addr_len = sizeof(peer_addr);
+        memset(&peer_addr, 0, sizeof(peer_addr));
+        int clientfd = accept(fd, reinterpret_cast<sockaddr*>(&peer_addr), &addr_len);
+        INFOLOG("sucess get client fd:[%d], peer addr: [%s:%d]", clientfd, inet_ntoa(peer_addr.sin_addr), ntohs(peer_addr.sin_port));
+    });
+
+    eventloop->addEpollEvent(&event);
+
+    int i = 0;
+    std::shared_ptr<lynns::TimerEvent> timer_event = std::make_shared<lynns::TimerEvent>(1000, true,
+        [&i](){
+            INFOLOG("trigger timer event, count = %d", i++);
+    });
+    eventloop->addTimerEvent(timer_event);
+
+    lynns::EventLoop::s_ptr eventloop2 = io_thread_pool.getIOThread()->getEventLoop();
+    eventloop2->addTimerEvent(timer_event);
+
+    io_thread_pool.start();
+
+}
+
+
+int main() {
+    lynns::Configer::setGlobalConfiger("../config/lynns.xml");
+    lynns::Logger::initGlobalLogger();
+
+    test_iothread();
+}
