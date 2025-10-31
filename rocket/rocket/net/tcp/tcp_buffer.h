@@ -39,6 +39,10 @@ public:
 
     int buffSize();
 
+    std::vector<char> getBuffer() {
+        return m_buff;
+    }
+
 private:
     int m_writePos;
     int m_readPos;

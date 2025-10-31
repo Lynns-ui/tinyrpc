@@ -20,7 +20,7 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int client_fd, int buffer_si
     }
 
     // 后面改
-    m_coder = std::make_shared<StringCoder>();
+    m_coder = std::make_shared<TinyPBCoder>();
 }
 
 TcpConnection::~TcpConnection() {
@@ -133,6 +133,7 @@ void TcpConnection::onWrite() {
         // 2. 将字节流写入到buffer中
         std::vector<AbstractProtocol::s_ptr> messages;
         // std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)> >
+        // INFOLOG("recv server msg, m_write_callbacks is %d", m_write_callbacks.empty());
         while (!m_write_callbacks.empty()) {
             auto it = m_write_callbacks.front();
             m_write_callbacks.pop();

@@ -3,13 +3,13 @@
 
 #include <memory>
 #include <string>
-#include "tcp/tcp_buffer.h"
+#include "../tcp/tcp_buffer.h"
 
 namespace rocket {
 
 class AbstractProtocol{
 public:
-    virtual ~AbstractProtocol() {}
+    virtual ~AbstractProtocol() = 0;
 
     typedef std::shared_ptr<AbstractProtocol> s_ptr;
 
@@ -21,9 +21,6 @@ public:
         m_req_id = req_id;
     }
 
-    virtual std::string getInfo() = 0;
-
-protected:
     std::string m_req_id;   // 请求id 或者响应
 
 };

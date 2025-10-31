@@ -8,9 +8,10 @@
 #include "tcp_buffer.h"
 #include "net_addr.h"
 #include "../io_thread.h"
-#include "../abstract_protocol.h"
-#include "../abstract_coder.h"
-#include "../string_coder.h"
+#include "../coder/abstract_protocol.h"
+#include "../coder/abstract_coder.h"
+#include "../coder/tinypb_coder.h"
+#include "../coder/tinypb_protocol.h"
 
 namespace rocket {
 

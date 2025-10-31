@@ -15,7 +15,8 @@ MAIN_CON = test_client.cc
 # 源文件
 SRCS = ../rocket/common/*.cc \
 	../rocket/net/*.cc \
-	../rocket/net/tcp/*.cc
+	../rocket/net/tcp/*.cc \
+	../rocket/net/coder/*.cc
 
 # 编译所有可执行的文件
 all: $(TARGETS)

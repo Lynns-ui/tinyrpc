@@ -3,7 +3,7 @@
 #include "../rocket/common/config.h"
 #include "../rocket/net/tcp/tcp_server.h"
 #include "../rocket/net/tcp/tcp_client.h"
-#include "../rocket/net/string_coder.h"
+#include "../rocket/net/coder/tinypb_coder.h"
 
 void test_connect() {
     
@@ -49,34 +49,21 @@ void test_client_encode() {
 
     client.connect([peer_addr, &client](){
         DEBUGLOG("connect to [%s] success", peer_addr->toString().c_str());
-        auto msg = std::make_shared<rocket::StringProtocol>("this is encode test!");
-        msg->setReqId("123456");
+        auto msg = std::make_shared<rocket::TinyPBProtocol>();
+        msg->m_req_id = "123456";
+
         client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("msg info is %s", msg->getInfo().c_str());
+            INFOLOG("send message success!");
         });
 
         client.readMsg("123456", [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("get req_id:[%s], get response [%s]", msg->getReqId().c_str(), msg->getInfo().c_str());
+            INFOLOG("get req_id:[%s], get response", msg->m_req_id.c_str());
         });
 
         client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("msg info is %s", msg->getInfo().c_str());
+            INFOLOG("send message 222 success!");
         });
-        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("msg info is %s", msg->getInfo().c_str());
-        });
-        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("msg info is %s", msg->getInfo().c_str());
-        });
-        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("msg info is %s", msg->getInfo().c_str());
-        });
-        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("msg info is %s", msg->getInfo().c_str());
-        });
-        client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
-            INFOLOG("msg info is %s", msg->getInfo().c_str());
-        });
+
     });
 
 }

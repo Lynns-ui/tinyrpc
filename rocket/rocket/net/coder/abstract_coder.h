@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "tcp/tcp_buffer.h"
+#include "../tcp/tcp_buffer.h"
 #include "abstract_protocol.h"
 
 namespace rocket {
