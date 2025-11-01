@@ -7,7 +7,7 @@
 
 namespace rocket {
 
-class AbstractProtocol{
+class AbstractProtocol {
 public:
     virtual ~AbstractProtocol() = 0;
 
@@ -26,5 +26,6 @@ public:
 };
 
 }
+
 
 #endif

@@ -7,6 +7,7 @@ namespace rocket {
 
 class TinyPBProtocol : public AbstractProtocol {
 public:
+    TinyPBProtocol() = default;
 
     static const char PB_START;
     static const char PB_END;
@@ -29,10 +30,6 @@ public:
 
     bool parse_success {false};
 };
-
-const char TinyPBProtocol::PB_START = 0x02;
-
-const char TinyPBProtocol::PB_END = 0x03;
 
 }
 

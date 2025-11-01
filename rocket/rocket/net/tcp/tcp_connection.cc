@@ -88,18 +88,21 @@ void TcpConnection::onRead() {
 void TcpConnection::excute() {
     if (m_connection_type == TcpConnection::TcpConnectionByServer) {
         // 以下是服务端处理请求，做出回复逻辑
-        std::vector<char> tmp;
-        int size = m_in_buffer->readBytes();
-        tmp.resize(size);
-        m_in_buffer->readFromBuffer(tmp, size);
-
-        std::string msg;
-        for (int i = 0; i < tmp.size(); i++) {
-            msg += tmp[i];
+        // 从inbuffer中去解码，得到 msg 对象
+        std::vector<AbstractProtocol::s_ptr> results;
+        std::vector<AbstractProtocol::s_ptr> messages;
+        m_coder->decode(results, m_in_buffer);
+        for (int i = 0; i < results.size(); i++) {
+            // 针对每一个请求，调用rpc方法获取响应msg
+            INFOLOG("success get request_id[%s] from client[%s]", results[i]->m_req_id.c_str(), m_peer_addr->toString().c_str());
+            std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
+            message->m_pb_data = "hello rpc";
+            // 将响应msg放入发送缓冲区，监听可写事件回包
+            message->m_req_id = results[i]->m_req_id;
+            messages.emplace_back(message);
         }
-        m_out_buffer->writeToBuffer(msg.c_str(), msg.length());
 
-        INFOLOG("success get request[%s] from client[%s]", msg.c_str(), m_peer_addr->toString().c_str());
+        m_coder->encode(messages, m_out_buffer);
 
         listenWrite();
     } else {
@@ -134,13 +137,9 @@ void TcpConnection::onWrite() {
         std::vector<AbstractProtocol::s_ptr> messages;
         // std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)> >
         // INFOLOG("recv server msg, m_write_callbacks is %d", m_write_callbacks.empty());
-        while (!m_write_callbacks.empty()) {
-            auto it = m_write_callbacks.front();
-            m_write_callbacks.pop();
+        for (int i = 0; i < m_write_callbacks.size(); i++) {
+            auto it = m_write_callbacks[i];
             messages.push_back(it.first);
-            if (it.second) {
-                it.second(it.first);
-            }
         }
 
         m_coder->encode(messages, m_out_buffer);
@@ -171,6 +170,11 @@ void TcpConnection::onWrite() {
     }
 
     if (is_write_all) {
+        for (auto& it : m_write_callbacks) {
+            if (it.second) {
+                it.second(it.first);
+            }
+        }
         m_fd_event->cancel(FdEvent::OUT_EVENT);
         m_event_loop->addEpollEvent(m_fd_event);
     }
@@ -225,7 +229,7 @@ void TcpConnection::listenRead() {
 }
 
 void TcpConnection::pushSendMsg(AbstractProtocol::s_ptr msg, std::function<void(AbstractProtocol::s_ptr)> call_back) {
-    m_write_callbacks.push(std::make_pair(msg, call_back));
+    m_write_callbacks.emplace_back(std::make_pair(msg, call_back));
 }
 
 void TcpConnection::pushReadMsg(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> call_back) {
