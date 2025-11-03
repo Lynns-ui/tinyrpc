@@ -12,10 +12,13 @@
 #include "../coder/abstract_coder.h"
 #include "../coder/tinypb_coder.h"
 #include "../coder/tinypb_protocol.h"
+#include "../rpc/rpc_dispatcher.h"
 
 namespace rocket {
 
-class TcpConnection {
+class RpcDispatcher;
+
+class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
 public:
     typedef std::shared_ptr<TcpConnection> s_ptr;
 
@@ -32,7 +35,7 @@ public:
     };
 
 
-    TcpConnection(EventLoop* event_loop, int client_fd, int buffer_size, NetAddr::s_ptr peer_addr, 
+    TcpConnection(EventLoop* event_loop, int client_fd, int buffer_size, NetAddr::s_ptr local_addr, NetAddr::s_ptr peer_addr, 
         TcpConnectionType type = TcpConnectionByServer);
 
     ~TcpConnection();
@@ -61,6 +64,10 @@ public:
     void pushSendMsg(AbstractProtocol::s_ptr msg, std::function<void(AbstractProtocol::s_ptr)> call_back);
 
     void pushReadMsg(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> call_back);
+
+    NetAddr::s_ptr getLocalAddr();
+
+    NetAddr::s_ptr getPeerAddr();
 private:
     NetAddr::s_ptr m_local_addr;
     NetAddr::s_ptr m_peer_addr;
@@ -85,6 +92,7 @@ private:
 
     // key : req_id
     std::map<std::string, std::function<void(AbstractProtocol::s_ptr)>> m_read_callbacks;
+
 };
 
 

@@ -21,7 +21,7 @@ TcpClient::TcpClient(NetAddr::s_ptr peer_addr) : m_peer_addr(peer_addr){
     m_fd_event->setNonBlock();
 
     // IOThread* io_thread, int client_fd, int buffer_size, NetAddr::s_ptr peer_addr
-    m_connection = std::make_shared<TcpConnection>(m_event_loop, m_fd, 128, m_peer_addr, TcpConnection::TcpConnectionByClient);
+    m_connection = std::make_shared<TcpConnection>(m_event_loop, m_fd, 128, nullptr, m_peer_addr, TcpConnection::TcpConnectionByClient);
 
 }
 
@@ -29,7 +29,6 @@ TcpClient::~TcpClient() {
     if (m_fd > 0) {
         close(m_fd);
     }
-
 }
 
 // 异步进行connect, connect成功，执行回调函数

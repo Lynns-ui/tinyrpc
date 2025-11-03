@@ -5,9 +5,9 @@
 
 namespace rocket {
 
-TcpConnection::TcpConnection(EventLoop* event_loop, int client_fd, int buffer_size, NetAddr::s_ptr peer_addr
+TcpConnection::TcpConnection(EventLoop* event_loop, int client_fd, int buffer_size, NetAddr::s_ptr local_addr, NetAddr::s_ptr peer_addr
     , TcpConnectionType type) : 
-    m_peer_addr(peer_addr), m_fd(client_fd), m_event_loop(event_loop), m_state(NotConnected), m_connection_type(type) {
+    m_local_addr(local_addr), m_peer_addr(peer_addr), m_fd(client_fd), m_event_loop(event_loop), m_state(NotConnected), m_connection_type(type) {
     
     m_in_buffer = std::make_shared<TcpBuffer>(buffer_size);
     m_out_buffer = std::make_shared<TcpBuffer>(buffer_size);
@@ -90,20 +90,20 @@ void TcpConnection::excute() {
         // 以下是服务端处理请求，做出回复逻辑
         // 从inbuffer中去解码，得到 msg 对象
         std::vector<AbstractProtocol::s_ptr> results;
-        std::vector<AbstractProtocol::s_ptr> messages;
+        std::vector<AbstractProtocol::s_ptr> response_messages;
         m_coder->decode(results, m_in_buffer);
         for (int i = 0; i < results.size(); i++) {
             // 针对每一个请求，调用rpc方法获取响应msg
             INFOLOG("success get request_id[%s] from client[%s]", results[i]->m_req_id.c_str(), m_peer_addr->toString().c_str());
             std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
-            message->m_pb_data = "hello rpc";
+            // message->m_pb_data = "hello rpc";
             // 将响应msg放入发送缓冲区，监听可写事件回包
-            message->m_req_id = results[i]->m_req_id;
-            messages.emplace_back(message);
+            // message->m_req_id = results[i]->m_req_id;
+            RpcDispatcher::GetRpcDispatcher().dispatch(results[i], message, this);
+            response_messages.emplace_back(message);
         }
 
-        m_coder->encode(messages, m_out_buffer);
-
+        m_coder->encode(response_messages, m_out_buffer);
         listenWrite();
     } else {
         // 作为client
@@ -234,6 +234,14 @@ void TcpConnection::pushSendMsg(AbstractProtocol::s_ptr msg, std::function<void(
 
 void TcpConnection::pushReadMsg(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> call_back) {
     m_read_callbacks[req_id] = call_back;
+}
+
+NetAddr::s_ptr TcpConnection::getLocalAddr() {
+    return m_local_addr;
+}
+
+NetAddr::s_ptr TcpConnection::getPeerAddr() {
+    return m_peer_addr;
 }
 
 }

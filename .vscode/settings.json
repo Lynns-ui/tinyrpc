@@ -67,6 +67,7 @@
         "socket": "cpp",
         "buffer": "cpp",
         "internet": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "unordered_set": "cpp"
     }
 }
