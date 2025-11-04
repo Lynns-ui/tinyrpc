@@ -14,7 +14,7 @@ void RpcDispatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::
     auto req = std::dynamic_pointer_cast<TinyPBProtocol>(request);
     auto rsp = std::dynamic_pointer_cast<TinyPBProtocol>(response);
 
-    rsp->m_req_id = req->m_req_id;
+    rsp->m_msg_id = req->m_msg_id;
     rsp->m_method_name = req->m_method_name;
 
     // service.method_name
@@ -29,7 +29,7 @@ void RpcDispatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::
     auto it = m_services_map.find(service_name);
     if (it == m_services_map.end()) {
         // 没找到服务
-        ERRORLOG("%s | service name[%s] not found", req->m_req_id.c_str(), service_name.c_str());
+        ERRORLOG("%s | service name[%s] not found", req->m_msg_id.c_str(), service_name.c_str());
         setTinyPBError(rsp, ERROR_SERVICE_NOT_FOUND, "service not found");
         return;
     }
@@ -40,7 +40,7 @@ void RpcDispatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::
     const google::protobuf::MethodDescriptor* method = service->GetDescriptor()->FindMethodByName(method_name);
     if (method == nullptr) {
         // 没有找到方法，从protobuf
-        ERRORLOG("%s | method [%s] not found", req->m_req_id.c_str(), method_name.c_str());
+        ERRORLOG("%s | method [%s] not found", req->m_msg_id.c_str(), method_name.c_str());
         setTinyPBError(rsp, ERROR_METHOD_NOT_FOUND, "method not found");
         return;
     }
@@ -51,31 +51,31 @@ void RpcDispatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::
     // 反序列化，将pbdata反序列化为 req_msg
     // 还原成原型，操控其中的字段
     if (!req_msg->ParseFromString(req->m_pb_data)) {
-        ERRORLOG("%s | deserialize failed", req->m_req_id.c_str());
+        ERRORLOG("%s | deserialize failed", req->m_msg_id.c_str());
         setTinyPBError(rsp, ERROR_FAILED_DESERIALIZE, "deserialize failed");
         return;
     }
-    INFOLOG("%s | get rpc request[%s]", req->m_req_id.c_str(), req_msg->ShortDebugString().c_str());
+    INFOLOG("%s | get rpc request[%s]", req->m_msg_id.c_str(), req_msg->ShortDebugString().c_str());
 
     std::unique_ptr<google::protobuf::Message> rsp_msg(service->GetResponsePrototype(method).New());
     
     RpcController controller;
     controller.SetLocalAddr(connection->getLocalAddr());
     controller.SetPeerAddr(connection->getPeerAddr());
-    controller.SetReqId(req->getReqId());
+    controller.SetMsgId(req->getMsgId());
 
     service->CallMethod(method, &controller, req_msg.get(), rsp_msg.get(), NULL);  //根据方法描述符，调用服务的对应方法，用请求消息传参，用响应消息接收结果
     
     if (!rsp_msg->SerializeToString(&(rsp->m_pb_data))) {
         // 没有序列化成功
-        ERRORLOG("[%s] | serialize failed", req->m_req_id.c_str());
+        ERRORLOG("[%s] | serialize failed", req->m_msg_id.c_str());
         setTinyPBError(rsp, ERROR_FAILED_SERIALIZE, "serialize failed");
         return;
     }
 
     // 在这里设置rsp的数据
     rsp->m_err_code = 0;
-    INFOLOG("[%s] | dispatcher success, request[%s], response[%s]", req->m_req_id.c_str(), req_msg->ShortDebugString().c_str(), 
+    INFOLOG("[%s] | dispatcher success, request[%s], response[%s]", req->m_msg_id.c_str(), req_msg->ShortDebugString().c_str(), 
         rsp_msg->ShortDebugString().c_str());
 }
 

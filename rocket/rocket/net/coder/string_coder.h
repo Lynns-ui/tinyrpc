@@ -45,7 +45,7 @@ public:
         }
 
         auto msg = std::make_shared<StringProtocol>(info);
-        msg->setReqId("123456");
+        msg->setMsgId("123456");
         out_messages.push_back(msg);
     }
 

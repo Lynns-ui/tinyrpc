@@ -28,13 +28,13 @@ public:
 
     void NotifyOnCancel(google::protobuf::Closure* callback);
 
-    void SetErrorCode(int32_t error_code, const std::string error_info);
+    void SetError(int32_t error_code, const std::string error_info);
 
     int32_t GetErrorCode();
     std::string GetErrorInfo();
 
-    void SetReqId(const std::string& req_id);
-    std::string GetReqId();
+    void SetMsgId(const std::string& msg_id);
+    std::string GetMsgId();
 
     void SetLocalAddr(NetAddr::s_ptr local_addr);
     void SetPeerAddr(NetAddr::s_ptr peer_addr);
@@ -49,7 +49,7 @@ public:
 private:
     int32_t m_error_code {0};
     std::string m_error_info;
-    std::string m_req_id;
+    std::string m_msg_id;
 
     bool m_is_failed {false};
     bool m_is_cancled {false};

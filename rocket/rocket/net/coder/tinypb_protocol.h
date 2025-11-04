@@ -14,8 +14,8 @@ public:
 
     int32_t m_pk_len {0};   // 整包长度
     
-    int32_t m_req_id_len {0};
-    // req_id在父类中
+    int32_t m_msg_id_len {0};
+    // msg_id在父类中
 
     int32_t m_method_name_len {0};   // 方法名长度
     std::string m_method_name;  // 方法名

@@ -63,7 +63,7 @@ public:
 
     void pushSendMsg(AbstractProtocol::s_ptr msg, std::function<void(AbstractProtocol::s_ptr)> call_back);
 
-    void pushReadMsg(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> call_back);
+    void pushReadMsg(const std::string& msg_id, std::function<void(AbstractProtocol::s_ptr)> call_back);
 
     NetAddr::s_ptr getLocalAddr();
 
@@ -90,7 +90,7 @@ private:
     // std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)> >
     std::vector<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_callbacks;
 
-    // key : req_id
+    // key : msg_id
     std::map<std::string, std::function<void(AbstractProtocol::s_ptr)>> m_read_callbacks;
 
 };

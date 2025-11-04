@@ -50,7 +50,7 @@ void test_client_encode() {
     client.connect([peer_addr, &client](){
         DEBUGLOG("connect to [%s] success", peer_addr->toString().c_str());
         auto msg = std::make_shared<rocket::TinyPBProtocol>();
-        msg->m_req_id = "123456789";
+        msg->m_msg_id = "123456789";
 
         client.writeMsg(msg, [msg](rocket::AbstractProtocol::s_ptr){
             INFOLOG("send message success!");
@@ -58,7 +58,7 @@ void test_client_encode() {
 
         client.readMsg("123456789", [](rocket::AbstractProtocol::s_ptr reponse){
             std::shared_ptr<rocket::TinyPBProtocol> read_msg = std::dynamic_pointer_cast<rocket::TinyPBProtocol>(reponse);
-            INFOLOG("get req_id:[%s], get response[%s]", read_msg->m_req_id.c_str(), read_msg->m_pb_data.c_str());
+            INFOLOG("get msg_id:[%s], get response[%s]", read_msg->m_msg_id.c_str(), read_msg->m_pb_data.c_str());
         });
 
     });

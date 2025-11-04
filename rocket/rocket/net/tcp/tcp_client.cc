@@ -86,12 +86,15 @@ void TcpClient::writeMsg(AbstractProtocol::s_ptr message, std::function<void(Abs
 }
 
 // 异步读取message 读取回包
-void TcpClient::readMsg(const std::string req_id, std::function<void(AbstractProtocol::s_ptr)> done) {
+void TcpClient::readMsg(const std::string msg_id, std::function<void(AbstractProtocol::s_ptr)> done) {
     // 1. 监听可读事件
-    m_connection->pushReadMsg(req_id, done);
-    // 2. 从buffer中decoder出msg对象，判断是否req_id相等，相等则成功，执行其回调
+    m_connection->pushReadMsg(msg_id, done);
+    // 2. 从buffer中decoder出msg对象，判断是否msg_id相等，相等则成功，执行其回调
     m_connection->listenRead();
 }
 
+void TcpClient::stop() {
+    m_event_loop->stop();
+}
 
 }
