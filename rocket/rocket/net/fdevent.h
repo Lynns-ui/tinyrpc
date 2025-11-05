@@ -10,7 +10,8 @@ class FdEvent {
 public:
     enum TriggerEvent {
         IN_EVENT = EPOLLIN,
-        OUT_EVENT = EPOLLOUT
+        OUT_EVENT = EPOLLOUT,
+        ERR_EVENT = EPOLLERR
     };
 
     FdEvent(int fd);
@@ -21,7 +22,7 @@ public:
 
     std::function<void()> handler(TriggerEvent event_type);
 
-    void listen(TriggerEvent event_type, std::function<void()> callback);
+    void listen(TriggerEvent event_type, std::function<void()> callback, std::function<void()> err_callback = nullptr);
 
     void cancel(TriggerEvent event_type);    // 取消监听
 
@@ -41,6 +42,7 @@ protected:
 
     std::function<void()> m_read_callback;
     std::function<void()> m_write_callback;
+    std::function<void()> m_error_callback {nullptr};
 };
 
 }

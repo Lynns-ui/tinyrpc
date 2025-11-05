@@ -26,6 +26,9 @@ public:
 
     void stop();
 
+    int getConnectErrorCode();
+    
+    std::string getConnectErrorInfo();
 private:
     NetAddr::s_ptr m_peer_addr;
     EventLoop* m_event_loop {NULL};
@@ -34,6 +37,10 @@ private:
     FdEvent* m_fd_event {NULL};
 
     TcpConnection::s_ptr m_connection;
+    
+    int m_connect_errorcode {0};
+    std::string m_error_info;
+
 };
 
 

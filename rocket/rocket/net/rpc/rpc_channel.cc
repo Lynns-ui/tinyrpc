@@ -74,17 +74,23 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     // std::shared_ptr<TcpClient> client = std::make_shared<TcpClient>(m_peer_addr);
     // auto self = shared_from_this();
     m_client->connect([this, req_protocol](){
+        RpcController* my_controller = dynamic_cast<RpcController*>(m_controller.get());
+        if (m_client->getConnectErrorCode() != 0) {
+            my_controller->SetError(m_client->getConnectErrorCode(), m_client->getConnectErrorInfo());
+            ERRORLOG("%s | connect to [%s] error, error code[%d], error info[%s]", req_protocol->getMsgId().c_str(), m_peer_addr->toString().c_str(), 
+                my_controller->GetErrorCode(), my_controller->GetErrorInfo().c_str());
+            return;
+        }
+
         DEBUGLOG("connect to [%s] success", m_peer_addr->toString().c_str());
 
-        m_client->writeMsg(req_protocol, [this, req_protocol](rocket::AbstractProtocol::s_ptr){
+        m_client->writeMsg(req_protocol, [this, req_protocol, my_controller](rocket::AbstractProtocol::s_ptr){
             INFOLOG("[%s] | send message success, call method name[%s], request[%s]", req_protocol->m_msg_id.c_str(), 
                 req_protocol->m_method_name.c_str(), m_request->ShortDebugString().c_str());
 
-            m_client->readMsg(req_protocol->m_msg_id, [this](rocket::AbstractProtocol::s_ptr rsp){
+            m_client->readMsg(req_protocol->m_msg_id, [this, my_controller](rocket::AbstractProtocol::s_ptr rsp){
                 std::shared_ptr<TinyPBProtocol> rsp_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(rsp);
                 INFOLOG("[%s] | success get rpc response, call method name[%s]", rsp_protocol->m_msg_id.c_str(), rsp_protocol->m_method_name.c_str());
-
-                RpcController* my_controller = dynamic_cast<RpcController*>(m_controller.get());
 
                 if (!m_reponse->ParseFromString(rsp_protocol->m_pb_data)) {
                     ERRORLOG("desrialize falied");

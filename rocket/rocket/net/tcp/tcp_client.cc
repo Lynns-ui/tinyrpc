@@ -2,6 +2,7 @@
 #include <string.h>
 #include "tcp_client.h"
 #include "../../common/log.h"
+#include "../../common/error_code.h"
 #include "../fd_event_pool.h"
 
 namespace rocket {
@@ -36,6 +37,7 @@ void TcpClient::connect(std::function<void()> done) {
     int rt = ::connect(m_fd, m_peer_addr->getSockAddr(), m_peer_addr->getSocklen());
     if (rt == 0) {
         DEBUGLOG("connect connect [%s] success", m_peer_addr->toString().c_str());
+        m_connection->setState(TcpConnection::Connected);
         if (done) {
             done();
         }
@@ -43,33 +45,51 @@ void TcpClient::connect(std::function<void()> done) {
         if (errno == EINPROGRESS) {
             // 监听epoll监听可写事件，然后判断错误码
             // 当connect成功之后，套接字应该变为“可写状态”
-            m_fd_event->listen(FdEvent::OUT_EVENT, [this, done](){
-                int error = 0;
-                socklen_t error_len = sizeof(error);
-                getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
-                bool is_connected = false;
-                if (error == 0) {
-                    INFOLOG("connect [%s] success", m_peer_addr->toString().c_str());
-                    m_connection->setState(TcpConnection::Connected);
-                    is_connected = true;
-                } else {
-                    ERRORLOG("connect error, errno=%d, error info =%s", errno, strerror(errno));
-                }
-                
-                // 当连接成功，需要把fd事件从eventloop循环中，移除，否则会一直触发可写事件
-                m_fd_event->cancel(FdEvent::OUT_EVENT);
-                m_event_loop->addEpollEvent(m_fd_event);
-                
-                // 如果监听成功才会执行回调函数
-                // 在回调函数中调用writeMsg，将StringCoder对象转化为字节流，放入out_buffer中
-                // 然后再将out_buffer中的数据写入到fd缓冲区中，让对端可以收到数据
-                if (is_connected && done) {
-                    done();
-                }
-            });
+            m_fd_event->listen(FdEvent::OUT_EVENT, 
+                [this, done](){
+                    int error = 0;
+                    socklen_t error_len = sizeof(error);
+                    getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
+                    bool is_connected = false;
+                    if (error == 0) {
+                        INFOLOG("connect [%s] success", m_peer_addr->toString().c_str());
+                        m_connection->setState(TcpConnection::Connected);
+                        is_connected = true;
+                    } else {
+                        m_connect_errorcode = ERROR_FAILED_CONNECT;
+                        m_error_info = "connected error, sys error = " + std::string(strerror(errno));
+                        ERRORLOG("connect error, errno=%d, error info =%s", errno, strerror(errno));
+                    }
+                    
+                    // 当连接成功，需要把fd事件从eventloop循环中，移除，否则会一直触发可写事件
+                    m_event_loop->delEpollEvent(m_fd_event);
+                    
+                    // 如果监听成功才会执行回调函数
+                    // 在回调函数中调用writeMsg，将StringCoder对象转化为字节流，放入out_buffer中
+                    // 然后再将out_buffer中的数据写入到fd缓冲区中，让对端可以收到数据
+                    if (done) {
+                        done();
+                    }
+                }, 
+                [this,done](){
+                    if (errno == ECONNREFUSED) {
+                        m_connect_errorcode = ERROR_FAILED_CONNECT;
+                        m_error_info = "connected refused, sys error = " + std::string(strerror(errno));
+                        ERRORLOG("connect refused, errno=%d, error info =%s", errno, strerror(errno));
+                    } else {
+                        m_connect_errorcode = ERROR_FAILED_CONNECT;
+                        m_error_info = "connected unkonw error, sys error = " + std::string(strerror(errno));
+                        ERRORLOG("connect unkonw error, errno=%d, error info =%s", errno, strerror(errno));
+                    }
+                });
             m_event_loop->addEpollEvent(m_fd_event);
         } else {
+            m_connect_errorcode = ERROR_FAILED_CONNECT;
+            m_error_info = "connected error, sys error = " + std::string(strerror(errno));
             ERRORLOG("connect error, errno=%d, error info =%s", errno, strerror(errno));
+            if (done) {
+                done();
+            }
         }
     }
     
@@ -96,5 +116,14 @@ void TcpClient::readMsg(const std::string msg_id, std::function<void(AbstractPro
 void TcpClient::stop() {
     m_event_loop->stop();
 }
+
+int TcpClient::getConnectErrorCode() {
+    return m_connect_errorcode;
+}
+    
+std::string TcpClient::getConnectErrorInfo() {
+    return m_error_info;
+}
+
 
 }
