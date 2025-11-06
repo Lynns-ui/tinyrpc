@@ -5,8 +5,27 @@
 #include <memory>
 #include "../tcp/net_addr.h"
 #include "../tcp/tcp_client.h"
+#include "../timerevent.h"
 
 namespace rocket {
+
+#define NEWMESSAGE(type, var_name) \
+    std::shared_ptr<type> var_name = std::make_shared<type>(); \
+
+#define NEWCONTROLLER(var_name) \
+    std::shared_ptr<rocket::RpcController> var_name = std::make_shared<rocket::RpcController>(); \
+
+#define NEWCHANNEL(var_name, addr) \
+    std::shared_ptr<rocket::RpcChannel> var_name = std::make_shared<rocket::RpcChannel>(std::make_shared<rocket::IPNetAddr>(addr)); \
+
+#define CALLRPC(var_name, addr, method_name, controller, request, response, closure) \
+{\
+    NEWCHANNEL(var_name, addr)\
+    var_name->Init(controller, request, response, closure);\
+    Order_Stub(var_name.get()).method_name(controller.get(), request.get(), response.get(), closure.get());\
+}\
+    
+
 
 class RpcChannel : public google::protobuf::RpcChannel , public std::enable_shared_from_this<RpcChannel> {
 public:
@@ -33,6 +52,7 @@ private:
     message_s_ptr m_request {nullptr};
     message_s_ptr m_reponse {nullptr};
     closure_s_ptr m_closure {nullptr};
+    TimerEvent::s_ptr m_timer_event {nullptr};
 
     bool m_is_init {false};
 

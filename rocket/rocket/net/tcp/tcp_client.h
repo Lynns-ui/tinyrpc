@@ -4,6 +4,7 @@
 #include "../coder/abstract_protocol.h"
 #include "net_addr.h"
 #include "../eventloop.h"
+#include "../timerevent.h"
 #include "tcp_connection.h"
 
 namespace rocket {
@@ -29,6 +30,8 @@ public:
     int getConnectErrorCode();
     
     std::string getConnectErrorInfo();
+
+    void addTimerEvent(TimerEvent::s_ptr timer_event);
 private:
     NetAddr::s_ptr m_peer_addr;
     EventLoop* m_event_loop {NULL};

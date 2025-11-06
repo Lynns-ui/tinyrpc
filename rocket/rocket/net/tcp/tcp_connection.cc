@@ -24,7 +24,7 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int client_fd, int buffer_si
 }
 
 TcpConnection::~TcpConnection() {
-    DEBUGLOG("destruct");
+    DEBUGLOG("TcpConnection destruct");
 }
 
 void TcpConnection::onRead() {

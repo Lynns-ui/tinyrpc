@@ -58,7 +58,7 @@ void TcpClient::connect(std::function<void()> done) {
                     } else {
                         m_connect_errorcode = ERROR_FAILED_CONNECT;
                         m_error_info = "connected error, sys error = " + std::string(strerror(errno));
-                        ERRORLOG("connect error, errno=%d, error info =%s", errno, strerror(errno));
+                        ERRORLOG("connect error, errno=%d, error info = %s", errno, strerror(errno));
                     }
                     
                     // 当连接成功，需要把fd事件从eventloop循环中，移除，否则会一直触发可写事件
@@ -125,5 +125,8 @@ std::string TcpClient::getConnectErrorInfo() {
     return m_error_info;
 }
 
+void TcpClient::addTimerEvent(TimerEvent::s_ptr timer_event) {
+    m_event_loop->addTimerEvent(timer_event);
+}
 
 }

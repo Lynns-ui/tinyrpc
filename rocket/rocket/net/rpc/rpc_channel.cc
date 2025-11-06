@@ -7,6 +7,7 @@
 #include "../../common/log.h"
 #include "../tcp/tcp_connection.h"
 #include "../../common/error_code.h"
+#include "../timerevent.h"
 
 namespace rocket {
 
@@ -16,7 +17,7 @@ RpcChannel::RpcChannel(NetAddr::s_ptr peer_addr) : m_peer_addr(peer_addr) {
 }
 
 RpcChannel::~RpcChannel() {
-    printf("RpcChannel destruct\n");
+    DEBUGLOG("RpcChannel destruct");
 }
 
 void RpcChannel::Init(controller_s_ptr controller, message_s_ptr request, message_s_ptr response, closure_s_ptr closure) {
@@ -69,6 +70,19 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
         return;
     }
 
+    // auto channel = shared_from_this();
+    m_timer_event = std::make_shared<TimerEvent>(m_rpcController->GetTimeOut(), false, [m_rpcController, this]() mutable {
+        m_rpcController->StartCancel();
+        m_rpcController->SetError(ERROR_RPC_CALL_TIMEOUT, "rpc call timeout " + std::to_string(m_rpcController->GetTimeOut()));
+
+        if (this->m_closure) {
+            this->m_closure->Run();
+        }
+        // .reset();
+    });
+
+    m_client->addTimerEvent(m_timer_event);
+
     // 必须用智能指针去构造
     // 连接
     // std::shared_ptr<TcpClient> client = std::make_shared<TcpClient>(m_peer_addr);
@@ -82,13 +96,16 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
             return;
         }
 
-        DEBUGLOG("connect to [%s] success", m_peer_addr->toString().c_str());
+        DEBUGLOG("rpc connect to [%s] success", m_peer_addr->toString().c_str());
 
         m_client->writeMsg(req_protocol, [this, req_protocol, my_controller](rocket::AbstractProtocol::s_ptr){
             INFOLOG("[%s] | send message success, call method name[%s], request[%s]", req_protocol->m_msg_id.c_str(), 
                 req_protocol->m_method_name.c_str(), m_request->ShortDebugString().c_str());
 
             m_client->readMsg(req_protocol->m_msg_id, [this, my_controller](rocket::AbstractProtocol::s_ptr rsp){
+                // 取消定时任务，当成功读取到回包后
+                m_timer_event->setCancel(true);
+
                 std::shared_ptr<TinyPBProtocol> rsp_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(rsp);
                 INFOLOG("[%s] | success get rpc response, call method name[%s]", rsp_protocol->m_msg_id.c_str(), rsp_protocol->m_method_name.c_str());
 
@@ -105,7 +122,7 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                     return;
                 }
 
-                if (m_closure) {
+                if (m_closure && !m_controller->IsCanceled()) {
                     m_closure->Run();
                 }
 
