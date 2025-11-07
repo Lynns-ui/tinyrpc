@@ -14,6 +14,18 @@ public:
 
     static Config* g_configer;
     std::string m_log_level;
+    std::string m_async_log;
+    std::string m_log_path;
+    std::string m_log_name;
+    std::string m_file_size;
+
+    std::string m_ip;
+    std::string m_port;
+
+    std::string m_client_async_log;
+    std::string m_client_log_path;
+    std::string m_client_log_name;
+    std::string m_client_file_size;
 private:
     Config(const char* xmlfile);
     // std::map<std::string, std::string> m_config_values; 

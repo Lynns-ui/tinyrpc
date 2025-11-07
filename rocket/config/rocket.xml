@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <root>
-    <log>
-        <log_level>DEBUG</log_level>
-    </log>
+    <server_log>
+        <server_log_level>INFO</server_log_level>
+        <server_async_log>false</server_async_log>
+        <server_log_path>./logs</server_log_path>
+        <server_log_name>ServerLog</server_log_name>
+        <server_file_count>5000</server_file_count>
+    </server_log>s
+
+    <server_IP>
+        <server_ip>127.0.0.1</server_ip>
+    </server_IP>
+    
+    <server_Port>
+        <server_port>1234</server_port>
+    </server_Port>
+
+    <client_log>
+        <client_async_log>false</client_async_log>
+        <client_log_path>./logs</client_log_path>
+        <client_log_name>ClientLog</client_log_name>
+        <client_file_count>5000</client_file_count>
+    </client_log>
 </root>

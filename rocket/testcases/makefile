@@ -5,9 +5,11 @@ LDFLAGS = -ltinyxml2 -lprotobuf
 
 # 目标可执行文件
 TARGETS = test_event test_io test_tcp test_connect \
-	test_rpc_client test_rpc_server
+	test_rpc_client test_rpc_server \
+	test_log
 
 # main函数入口文件
+MAIN_LOG = test_log.cc
 MAIN_EVENT = test_eventloop.cc
 MAIN_IO = test_iothread.cc
 MAIN_TCP = test_tcp.cc
@@ -25,6 +27,10 @@ SRCS = ../rocket/common/*.cc \
 
 # 编译所有可执行的文件
 all: $(TARGETS)
+
+test_log: $(MAIN_LOG) $(SRCS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) 
+	@echo "编译完成：$@"
 
 test_event: $(MAIN_EVENT) $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) 

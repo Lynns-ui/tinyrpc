@@ -112,7 +112,8 @@ void test_package() {
 int main() {
 
     rocket::Config::SetGlobalConfiger("../config/rocket.xml");
-    rocket::Logger::InitLogger();
+    rocket::Logger::InitLogger(rocket::Config::GetGlobalCongfiger()->m_client_log_path, rocket::Config::GetGlobalCongfiger()->m_client_log_name,
+        rocket::Config::GetGlobalCongfiger()->m_client_file_size, rocket::Config::GetGlobalCongfiger()->m_client_async_log);
 
     test_package();
 

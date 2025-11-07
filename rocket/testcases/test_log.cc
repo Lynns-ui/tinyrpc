@@ -9,9 +9,11 @@ void test() {
     ERRORLOG("error");
 }
 void test2() {
-    DEBUGLOG("debug2");
-    INFOLOG("info2");
-    ERRORLOG("error2");
+    for (int i = 0; i < 1000; i++) {
+        DEBUGLOG("debug2");
+        INFOLOG("info2");
+        ERRORLOG("error2");
+    }
 }
 
 int main() {

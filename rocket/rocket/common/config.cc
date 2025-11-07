@@ -42,12 +42,41 @@ Config::Config(const char* xmlfile) {
     }
     READ_XML_NODE(root, xml_document);
 
-    READ_XML_NODE(log, root_node);
+    // 日志配置
+    READ_XML_NODE(server_log, root_node);
+    READ_STR_XML_NODE(server_log_level, server_log_node);
+    READ_STR_XML_NODE(server_async_log, server_log_node);
+    READ_STR_XML_NODE(server_log_path, server_log_node);
+    READ_STR_XML_NODE(server_log_name, server_log_node);
+    READ_STR_XML_NODE(server_file_count, server_log_node);
 
-    READ_STR_XML_NODE(log_level, log_node);
+    m_log_level = server_log_level_str;
+    m_async_log = server_async_log_str;
+    m_log_path = server_log_path_str;
+    m_log_name = server_log_name_str;
+    m_file_size = server_file_count_str;
 
-    m_log_level = log_level_str;
-    
+    // ip地址
+    READ_XML_NODE(server_IP, root_node);
+    READ_STR_XML_NODE(server_ip, server_IP_node);
+    m_ip = server_ip_str;
+
+    // 端口号
+    READ_XML_NODE(server_Port, root_node);
+    READ_STR_XML_NODE(server_port, server_Port_node);
+    m_port = server_port_str;
+
+    // 客户端日志配置
+    READ_XML_NODE(client_log, root_node);
+    READ_STR_XML_NODE(client_async_log, client_log_node);
+    READ_STR_XML_NODE(client_log_path, client_log_node);
+    READ_STR_XML_NODE(client_log_name, client_log_node);
+    READ_STR_XML_NODE(client_file_count, client_log_node);
+
+    m_client_async_log = client_async_log_str;
+    m_client_log_path = client_log_path_str;
+    m_client_log_name = client_log_name_str;
+    m_client_file_size = client_file_count_str;
 }
 
 

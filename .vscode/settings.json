@@ -69,6 +69,7 @@
         "internet": "cpp",
         "shared_mutex": "cpp",
         "unordered_set": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "fstream": "cpp"
     }
 }

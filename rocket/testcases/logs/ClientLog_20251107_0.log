@@ -1,0 +1,53 @@
+[DEBUG]	[25-11-07 19:46:41.724]	[592568:592568]	[../rocket/net/timer.cc:12]	timer_fd[6] create success
+[INFO]	[25-11-07 19:46:41.724]	[592568:592568]	[../rocket/net/eventloop.cc:62]	sucess create event loop in thread 592568
+[DEBUG]	[25-11-07 19:46:41.724]	[592568:592568]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[4]
+[DEBUG]	[25-11-07 19:46:41.724]	[592568:592568]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[6]
+[INFO]	[25-11-07 19:46:41.724]	[592568:592568]	[../rocket/net/rpc/rpc_channel.cc:63]	[99998888] | callmethod name [Order.makeOrder]
+[DEBUG]	[25-11-07 19:46:41.724]	[592568:592568]	[../rocket/net/timer.cc:74]	timer reset to  1579420364
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:119]	fd 8 trigger EPOLLOUT event
+[INFO]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/tcp/tcp_client.cc:55]	connect [127.0.0.1:1234] success
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/rpc/rpc_channel.cc:99]	rpc connect to [127.0.0.1:1234] success
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:119]	fd 8 trigger EPOLLOUT event
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:154]	msg_id = 99998888
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:222]	encode messagge[99998888] success
+[DEBUG]	[25-11-07 19:46:41.724]	[592568:592568]	[../rocket/net/timerevent.cc:15]	success create timer event, it will excute at [ 1579420364]
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[8]
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:184]	del epoll_event sucess, fd[8]
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[8]
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:157]	pk_data_len = [58]
+[INFO]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/tcp/tcp_connection.cc:162]	all data has write to client [127.0.0.1:1234]
+[INFO]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/rpc/rpc_channel.cc:102]	[99998888] | send message success, call method name[Order.makeOrder], request[price: 100 goods: "apple"]
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[8]
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/eventloop.cc:116]	fd 8 trigger EPOLLIN event
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/tcp/tcp_connection.cc:49]	success read 59 bytes from addr[127.0.0.1:1234], client_fd[8]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:80]	parse msg_id_len=[8]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:97]	parse method_len=[15]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:114]	parse error_code=[0]
+[DEBUG]	[25-11-07 19:46:41.725]	[592568:592568]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[8]
+[DEBUG]	[25-11-07 19:46:46.726]	[592568:592568]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:44]	get pk_len = 59
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:87]	parse msg_id=[99998888]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:104]	parse method_name=[Order.makeOrder]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:124]	parse err_info_len=[0]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:137]	parse pb_data=[20251103]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:131]	parse error_info=[]
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/coder/tinypb_coder.cc:61]	decode end, read all buffer data
+[INFO]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/rpc/rpc_channel.cc:110]	[99998888] | success get rpc response, call method name[Order.makeOrder]
+[INFO]	[25-11-07 19:46:46.727]	[592568:592568]	[test_rpc_client.cc:101]	call rpc success, request[price: 100 goods: "apple"], request[order_id: "20251103"]
+[INFO]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/rpc/rpc_channel.cc:117]	send message success, response[order_id: "20251103"]
+[INFO]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/eventloop.cc:134]	Wake UP
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/eventloop.cc:116]	fd 4 trigger EPOLLIN event
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/rpc/rpc_channel.cc:20]	RpcChannel destruct
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/tcp/tcp_connection.cc:27]	TcpConnection destruct
+[DEBUG]	[25-11-07 19:46:46.727]	[592568:592568]	[../rocket/net/rpc/rpc_channel.cc:20]	RpcChannel destruct
+[DEBUG]	[25-11-07 19:46:46.728]	[592568:592568]	[../rocket/net/tcp/tcp_connection.cc:27]	TcpConnection destruct
