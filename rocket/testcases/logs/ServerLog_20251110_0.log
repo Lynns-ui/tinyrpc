@@ -1,0 +1,93 @@
+[INFO]	[25-11-10 18:36:44.832]	[9977:9977]	[../rocket/net/rpc/rpc_diapatcher.cc:85]	register service[Order] success
+[INFO]	[25-11-10 18:36:44.832]	[9977:9977]	[test_rpc_server.cc:32]	create addr 127.0.0.1:1234
+[DEBUG]	[25-11-10 18:36:44.832]	[9977:9977]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[6]
+[DEBUG]	[25-11-10 18:36:44.832]	[9977:9977]	[../rocket/net/timer.cc:12]	timer_fd[7] create success
+[DEBUG]	[25-11-10 18:36:44.832]	[9977:9977]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[7]
+[INFO]	[25-11-10 18:36:44.832]	[9977:9977]	[../rocket/net/eventloop.cc:62]	sucess create event loop in thread 9977
+[DEBUG]	[25-11-10 18:36:44.832]	[9977:9979]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[9]
+[DEBUG]	[25-11-10 18:36:44.832]	[9977:9979]	[../rocket/net/timer.cc:12]	timer_fd[10] create success
+[DEBUG]	[25-11-10 18:36:44.832]	[9977:9979]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[10]
+[INFO]	[25-11-10 18:36:44.832]	[9977:9979]	[../rocket/net/eventloop.cc:62]	sucess create event loop in thread 9979
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9977]	[../rocket/net/io_thread.cc:23]	IOThread 9979 create sucess
+[DEBUG]	[25-11-10 18:36:44.832]	[9977:9979]	[../rocket/net/io_thread.cc:54]	wait IOthread 9979 loop
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9980]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[12]
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9980]	[../rocket/net/timer.cc:12]	timer_fd[13] create success
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9980]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[13]
+[INFO]	[25-11-10 18:36:44.833]	[9977:9980]	[../rocket/net/eventloop.cc:62]	sucess create event loop in thread 9980
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9977]	[../rocket/net/io_thread.cc:23]	IOThread 9980 create sucess
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9980]	[../rocket/net/io_thread.cc:54]	wait IOthread 9980 loop
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9977]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[4]
+[INFO]	[25-11-10 18:36:44.833]	[9977:9977]	[../rocket/net/tcp/tcp_server.cc:13]	rocket TcpServer listen success on [127.0.0.1:1234]
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9977]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9979]	[../rocket/net/io_thread.cc:56]	start IOthread 9979 loop
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9980]	[../rocket/net/io_thread.cc:56]	start IOthread 9980 loop
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9979]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:44.833]	[9977:9980]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:54.843]	[9977:9977]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:36:54.843]	[9977:9977]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:54.843]	[9977:9979]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:54.843]	[9977:9980]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:36:54.843]	[9977:9979]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:36:54.843]	[9977:9980]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:55.380]	[9977:9977]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-10 18:36:55.380]	[9977:9977]	[../rocket/net/eventloop.cc:116]	fd 4 trigger EPOLLIN event
+[DEBUG]	[25-11-10 18:36:55.380]	[9977:9977]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[INFO]	[25-11-10 18:36:55.380]	[9977:9977]	[../rocket/net/tcp/tcp_acceptor.cc:55]	client have accepted sucess, peer addr [127.0.0.1:60438]
+[INFO]	[25-11-10 18:36:55.380]	[9977:9977]	[../rocket/net/eventloop.cc:134]	Wake UP
+[INFO]	[25-11-10 18:36:55.380]	[9977:9977]	[../rocket/net/tcp/tcp_server.cc:62]	TcpServer success get client, fd=[14]
+[DEBUG]	[25-11-10 18:36:55.380]	[9977:9979]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-10 18:36:55.380]	[9977:9977]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:55.380]	[9977:9979]	[../rocket/net/eventloop.cc:116]	fd 9 trigger EPOLLIN event
+[DEBUG]	[25-11-10 18:36:55.380]	[9977:9979]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/eventloop.cc:176]	add epoll_event sucess, fd[14]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/eventloop.cc:160]	read full bytes from wakeup fd[9]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/eventloop.cc:116]	fd 14 trigger EPOLLIN event
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/tcp/tcp_connection.cc:49]	success read 58 bytes from addr[127.0.0.1:60438], client_fd[14]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:44]	get pk_len = 58
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:80]	parse msg_id_len=[8]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:87]	parse msg_id=[99998888]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:97]	parse method_len=[15]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:104]	parse method_name=[Order.makeOrder]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:114]	parse error_code=[0]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:124]	parse err_info_len=[0]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:131]	parse error_info=[]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:137]	parse pb_data=[dapple]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:61]	decode end, read all buffer data
+[INFO]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/tcp/tcp_connection.cc:97]	success get request_id[99998888] from client[127.0.0.1:60438]
+[INFO]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/rpc/rpc_diapatcher.cc:101]	full_name[Order.makeOrder], service_name[Order], method_name[makeOrder]
+[INFO]	[25-11-10 18:36:55.381]	[9977:9979]	[../rocket/net/rpc/rpc_diapatcher.cc:58]	99998888 | get rpc request[price: 100 goods: "apple"]
+[DEBUG]	[25-11-10 18:36:55.381]	[9977:9979]	[test_rpc_server.cc:18]	start sleep 5s
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[test_rpc_server.cc:20]	end sleep 5s
+[INFO]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/rpc/rpc_diapatcher.cc:78]	[99998888] | dispatcher success, request[price: 100 goods: "apple"], response[order_id: "20251103"]
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:154]	msg_id = 99998888
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:157]	pk_data_len = [59]
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/coder/tinypb_coder.cc:222]	encode messagge[99998888] success
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[14]
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/eventloop.cc:119]	fd 14 trigger EPOLLOUT event
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[INFO]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/tcp/tcp_connection.cc:162]	all data has write to client [127.0.0.1:60438]
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/eventloop.cc:173]	add epoll_event sucess, fd[14]
+[DEBUG]	[25-11-10 18:37:00.382]	[9977:9979]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:37:00.383]	[9977:9979]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 1
+[DEBUG]	[25-11-10 18:37:00.383]	[9977:9979]	[../rocket/net/eventloop.cc:116]	fd 14 trigger EPOLLIN event
+[DEBUG]	[25-11-10 18:37:00.383]	[9977:9979]	[../rocket/net/eventloop.cc:90]	start epollloop task!
+[DEBUG]	[25-11-10 18:37:00.383]	[9977:9979]	[../rocket/net/tcp/tcp_connection.cc:49]	success read 0 bytes from addr[127.0.0.1:60438], client_fd[14]
+[INFO]	[25-11-10 18:37:00.383]	[9977:9979]	[../rocket/net/tcp/tcp_connection.cc:71]	peer close, peer addr[127.0.0.1:60438], client_fd[14]
+[DEBUG]	[25-11-10 18:37:00.383]	[9977:9979]	[../rocket/net/eventloop.cc:184]	del epoll_event sucess, fd[14]
+[DEBUG]	[25-11-10 18:37:00.383]	[9977:9979]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:37:04.852]	[9977:9980]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:37:04.852]	[9977:9980]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:37:05.390]	[9977:9977]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:37:05.390]	[9977:9977]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:37:10.394]	[9977:9979]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:37:10.394]	[9977:9979]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:37:14.862]	[9977:9980]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:37:14.862]	[9977:9980]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait
+[DEBUG]	[25-11-10 18:37:15.401]	[9977:9977]	[../rocket/net/eventloop.cc:104]	now end epoll_wait, rt = 0
+[DEBUG]	[25-11-10 18:37:15.401]	[9977:9977]	[../rocket/net/eventloop.cc:102]	now begin to epoll_wait

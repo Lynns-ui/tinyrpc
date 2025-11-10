@@ -77,7 +77,7 @@ public:
 
     void loop();
 
-    void pushLog(std::queue<std::string>& buff);
+    void pushLog(const std::string& log);
 
     void start();
 

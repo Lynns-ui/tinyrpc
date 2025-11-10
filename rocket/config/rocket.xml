@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <root>
     <server_log>
-        <server_log_level>INFO</server_log_level>
-        <server_async_log>false</server_async_log>
+        <server_log_level>DEBUG</server_log_level>
+        <server_async_log>true</server_async_log>
         <server_log_path>./logs</server_log_path>
         <server_log_name>ServerLog</server_log_name>
-        <server_file_count>5000</server_file_count>
+        <server_file_count>2000</server_file_count>
     </server_log>s
 
     <server_IP>

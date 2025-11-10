@@ -100,16 +100,26 @@ void Logger::pushLog(const std::string& msg) {
 }
 
 void Logger::log() {
-    std::lock_guard<std::mutex>locker(mtx_);
+    std::queue<std::string> tmp;
+    {
+        std::lock_guard<std::mutex>locker(mtx_);
+        tmp.swap(m_buff);
+    }
+
     if (!m_is_openfile) {
-        while (!m_buff.empty()) {
-            std::string msg = m_buff.front();
-            m_buff.pop();
+        while (!tmp.empty()) {
+            std::string msg = tmp.front();
+            tmp.pop();
             
-            printf(msg.c_str());
+            printf("%s", msg.c_str());
         }
     } else {
-        m_asynclogger->pushLog(m_buff);
+        while (!tmp.empty()) {
+            std::string msg = tmp.front();
+            tmp.pop();
+            
+            m_asynclogger->pushLog(msg);
+        }
     }
 }
 
@@ -138,8 +148,8 @@ void AsyncLogger::loop() {
         return;
     }
 
-    std::unique_lock<std::mutex> locker(m_mtx);
     while (m_start) {
+        std::unique_lock<std::mutex> locker(m_mtx);
         // 当lambda表达式，返回false线程释放锁，阻塞
         m_cond.wait(locker, [this](){
             return !m_buff.empty() || !m_start;
@@ -153,12 +163,12 @@ void AsyncLogger::loop() {
             std::string log = m_buff.front();
             m_buff.pop();
             m_log_file << log;
-            m_log_file.flush();
             m_line_count++;
 
             // std::streampos file_size = m_log_file.tellp();
             if (m_line_count >= m_max_file_size) {
                 m_file_index++;
+                m_log_file.flush();
                 m_log_file.close();
                 if(!createFile()) {
                     std::cout << "ctreate file failed" << std::endl;
@@ -171,10 +181,10 @@ void AsyncLogger::loop() {
     }
 }
 
-void AsyncLogger::pushLog(std::queue<std::string>& buff) {
+void AsyncLogger::pushLog(const std::string& log) {
     std::lock_guard<std::mutex> locker(m_mtx);
-    m_buff.swap(buff);
-    m_cond.notify_one();
+    m_buff.push(log);
+    m_cond.notify_all();
 }
 
 bool AsyncLogger::createFile() {

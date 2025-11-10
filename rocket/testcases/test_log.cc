@@ -9,7 +9,7 @@ void test() {
     ERRORLOG("error");
 }
 void test2() {
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 3000; i++) {
         DEBUGLOG("debug2");
         INFOLOG("info2");
         ERRORLOG("error2");
@@ -21,7 +21,8 @@ int main() {
     // std::cout << "formatString :[ " << msg << "]" << std::endl;
     
     rocket::Config::SetGlobalConfiger("../config/rocket.xml");
-    rocket::Logger::InitLogger();
+    rocket::Logger::InitLogger(rocket::Config::GetGlobalCongfiger()->m_log_path, rocket::Config::GetGlobalCongfiger()->m_log_name,
+        rocket::Config::GetGlobalCongfiger()->m_file_size, rocket::Config::GetGlobalCongfiger()->m_async_log);
     std::thread t(test);
     std::thread t2(test2);
 
